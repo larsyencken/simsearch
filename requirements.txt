@@ -1,0 +1,8 @@
+Django>=1.2.1
+South>=0.7.2
+cjktools>=1.5.0
+cjktools-data>=0.2.1-2010-07-29
+consoleLog>=0.2.4
+django-hierarchy>=0.2.3
+jp-grapheme-alt>=0.1.2
+simplestats>=0.2.0

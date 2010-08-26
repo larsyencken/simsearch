@@ -1,0 +1,7 @@
+syntax: glob
+*.pyc
+*.pyo
+*.swp
+*.orig
+*-env
+local_settings.py
