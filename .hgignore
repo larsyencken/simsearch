@@ -5,3 +5,7 @@ syntax: glob
 *.orig
 *-env
 local_settings.py
+simsearch/search/stroke.{so,os,c}
+*.log
+distribute*.tar.gz
+.scon*
