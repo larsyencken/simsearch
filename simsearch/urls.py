@@ -13,7 +13,7 @@ from django.conf.urls.defaults import *
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns('simsearch.views',
+urlpatterns = patterns('simsearch.search.views',
     (r'^$', 'search'),
     # Example:
     # (r'^simsearch/', include('simsearch.foo.urls')),

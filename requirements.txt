@@ -3,6 +3,6 @@ cjktools-data>=0.2.1-2010-07-29
 consoleLog>=0.2.4
 simplestats>=0.2.0
 pymongo
-http://github.com/aparo/django-mongodb-engine/zipball/master
+mongoengine>=0.3
 http://bitbucket.org/wkornewald/django-nonrel/get/tip.zip
 http://bitbucket.org/wkornewald/djangotoolbox/get/tip.zip

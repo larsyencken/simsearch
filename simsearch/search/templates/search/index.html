@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Kanji similarity search</h1>
+
+<form method="GET">
+  <input type="text" value="{{query}}" name="query" />
+  <input type="submit" value="Search" />
+</form>
+
+{% if messages %}
+<ul class="messages">
+  {% for message in messages %}
+  <li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if results %}
+<ul class="results">
+  {% for result in results %}
+  <li>
+    <a href="?query={{result.kanji}}&trace={{trace}}">{{result.kanji}}</a>
+    ({{result.weight}})
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

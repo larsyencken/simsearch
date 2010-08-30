@@ -11,6 +11,10 @@
 Django settings for the simsearch project.
 """
 
+import os
+
+import mongoengine
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -20,18 +24,29 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+# normal django database access ignored
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
+#    'default': {
+#        'ENGINE': 'django_mongodb_engine.mongodb',
+#        'NAME': 'simsearch',
+#        'USER': '',
+#        'PASSWORD': '',
+#        'HOST': 'localhost',
+#        'PORT': 27017,
+#        'SUPPORTS_TRANSACTIONS': False,
+#    },
 }
 
+# custom MongoDB connection settings
+MONGODB_NAME = 'simsearch'
+MONGODB_USERNAME = None
+MONGODB_PASSWORD = None
+
 UTF8_BYTES_PER_CHAR = 3 # for CJK chars
+
+N_NEIGHBOURS_STORED = 100
+
+N_NEIGHBOURS_RECALLED = 15
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -88,9 +103,18 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
+#TEMPLATE_CONTEXT_PROCESSORS = (
+#    'django.contrib.messages.context_processors.messages',
+#)
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+SESSION_ENGINE = 'mongoengine.django.sessions'
+
 ROOT_URLCONF = 'simsearch.urls'
 
 TEMPLATE_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'templates'),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -99,11 +123,9 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
 #    'django.contrib.auth',
 #    'django.contrib.contenttypes',
-#    'django.contrib.sessions',
 #    'django.contrib.sites',
 #    'django.contrib.messages',
-    # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.sessions',
     'djangotoolbox',
     'simsearch.search',
 )
@@ -112,6 +134,11 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+# connect to our database
+import mongoengine
+mongoengine.connect(MONGODB_NAME, username=MONGODB_USERNAME,
+        password=MONGODB_PASSWORD)
 
 # vim: ts=4 sw=4 sts=4 et tw=78:
 
