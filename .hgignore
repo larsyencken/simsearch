@@ -9,3 +9,4 @@ simsearch/search/stroke.{so,os,c}
 *.log
 distribute*.tar.gz
 .scon*
+.DS_Store
