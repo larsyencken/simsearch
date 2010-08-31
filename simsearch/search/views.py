@@ -15,6 +15,7 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.utils import simplejson
 from django.http import HttpResponse
+from django.conf import settings
 
 from cjktools import scripts
 from mongoengine.queryset import DoesNotExist
@@ -51,7 +52,7 @@ def old_search(request):
 def old_search_xhr(request):
     pivot = request.GET.get('pivot')
     neighbours = [n.kanji for n in models.Node.objects.get(
-            pivot=pivot).neighbours]
+            pivot=pivot).neighbours][:settings.N_NEIGHBOURS_RECALLED]
     response_dict = {
                 'pivot_kanji': pivot,
                 'tier1': neighbours[:4],
