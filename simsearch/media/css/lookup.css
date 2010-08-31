@@ -1,0 +1,42 @@
+
+a {text-decoration: none;}
+a:link, a:visited { color:black; }
+a:hover { color:blue; }
+a img {border: none;}
+
+.similarKanji {
+    font-size: 2em;
+    font-family: MS Gothic;
+}
+
+.tier1Kanji a:link {
+    color:black;
+}
+
+.tier2Kanji a:link {
+    color:#606060;
+}
+
+.tier3Kanji a:link {
+    color:#b0b0b0;
+}
+
+#lookupBorder {
+    border: 1px solid #505050;
+}
+
+#pivotKanji {
+    font-size: 2em;
+    font-family: MS Gothic;
+}
+
+#seedLookup {
+    position:absolute; margin:auto; top:0; right:0; left:0; bottom:0;
+    opacity:0.01;
+}
+
+input { border:1px solid #505050; font-size:20px; vertical-align:top; }
+
+.error { position:absolute; color:black; width:400px;
+    text-align:center;
+}

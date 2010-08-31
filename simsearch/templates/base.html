@@ -6,9 +6,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>Kanji similarity search</title>
+  {% block headers %}
+  {% endblock %}
 </head>
 
-<body>
+<body {% block body_tags %}{% endblock %}>
 {% block content %}
 {% endblock %}
 </body>

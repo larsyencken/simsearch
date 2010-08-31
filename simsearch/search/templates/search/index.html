@@ -17,13 +17,27 @@
 {% endif %}
 
 {% if results %}
-<ul class="results">
+<hr/>
+<table>
+  <thead>
+    <tr>
+      <th>Score</th><th>Neighbour</th><th>Translate</th>
+    </tr>
+  </thead>
+  <tbody>
   {% for result in results %}
-  <li>
-    <a href="?query={{result.kanji}}&trace={{trace}}">{{result.kanji}}</a>
-    ({{result.weight}})
-  </li>
+  <tr>
+    <td>{{result.weight|floatformat:3}}</td>
+    <td>
+      <a href="?query={{result.kanji}}&trace={{trace}}">{{result.kanji}}</a>
+    </td>
+    <td>
+      <a
+      href="http://kub.gakusha.info/kanji/translate/?kanji={{result.kanji}}">translate</a>
+    </td>
+  </tr>
   {% endfor %}
-</ul>
+  </tbody>
+</table>
 {% endif %}
 {% endblock %}

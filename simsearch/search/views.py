@@ -13,15 +13,17 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import messages
+from django.utils import simplejson
+from django.http import HttpResponse
 
 from cjktools import scripts
 from mongoengine.queryset import DoesNotExist
 
 import models
 
-def search(request):
+def raw_search(request):
     context = {}
-    kanji = request.GET.get('query')
+    kanji = request.GET.get('query') or ''
     trace = request.GET.get('trace', '') + kanji
     context['query'] = kanji
     context['trace'] = trace
@@ -41,6 +43,25 @@ def search(request):
 
     return render_to_response('search/index.html', context,
             context_instance=RequestContext(request))
+
+def old_search(request):
+    return render_to_response('search/old.html', {},
+            context_instance=RequestContext(request))
+
+def old_search_xhr(request):
+    pivot = request.GET.get('pivot')
+    neighbours = [n.kanji for n in models.Node.objects.get(
+            pivot=pivot).neighbours]
+    response_dict = {
+                'pivot_kanji': pivot,
+                'tier1': neighbours[:4],
+                'tier2': neighbours[4:9],
+                'tier3': neighbours[9:],
+            }
+    return HttpResponse(
+            simplejson.dumps(response_dict),
+            mimetype='application/javascript',
+        )
 
 def _is_valid_query(kanji):
     return len(kanji) == 1 and scripts.script_type(kanji) == \
