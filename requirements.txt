@@ -6,3 +6,5 @@ pymongo
 mongoengine>=0.3
 http://bitbucket.org/wkornewald/django-nonrel/get/tip.zip
 http://bitbucket.org/wkornewald/djangotoolbox/get/tip.zip
+pyyaml
+nltk
