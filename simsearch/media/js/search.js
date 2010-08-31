@@ -33,7 +33,7 @@ var windowDirty = false;
  * drawError()
  *      Draws an error message to the screen.
  */
-function drawError(messageEn, messageJp) {
+function drawError(messageEn, messageJp, timeout) {
     // Render it, but still hidden, so we can check its size.
     setOpacity('errorMessage', 0.01);
     showElement('errorMessage');
@@ -63,8 +63,10 @@ function drawError(messageEn, messageJp) {
     setElementPosition('errorMessage', errorLoc);
 
     appear('errorMessage');
-    callLater(5, function(){ fade('errorMessage'); });
-    drawSeedingInput(false);
+    if (timeout > 0) {
+        callLater(timeout, function(){ fade('errorMessage'); });
+        drawSeedingInput(false);
+    }
 }
 
 /*
@@ -156,14 +158,14 @@ function submitSeed() {
 
     if (value.length != 1) {
         drawError('Please enter a single kanji only.',
-        '漢字を一つ書いてください。');
+        '漢字を一つ書いてください。', 5);
     } else {
         // Check that the input is a kanji.
         logDebug("Ok value: " + value);
         var valueOrd = ord(value);
         if (valueOrd < 12353 || valueOrd > 40869) {
             drawError('Please enter a single kanji only.',
-            '漢字を一つ書いてください。');
+            '漢字を一つ書いてください。', 5);
         } else {
             // Valid!
             switchState("lookup", value);
@@ -209,7 +211,8 @@ function initLookup(pivotKanjiVal) {
     var failure = function(err) {
         logDebug("Couldn't load data: " + err);
         switchState('seeding', null);
-        drawError('No data found for the kanji ' + pivotKanjiVal + '.', '');
+        drawError('No data found for the kanji ' + pivotKanjiVal + '.', '',
+            10);
     }
 
     newDoc.addCallbacks(success, failure);
@@ -654,6 +657,14 @@ var g_initState = {
 
 function initInterface() {
     drawSeedingInput();
+    callLater(3, function(){
+        drawError('Enter a query kanji similar to the kanji you want', '', 0);
+        drawSeedingInput(false);
+        callLater(10, function(){
+            drawError('Try using 開 to start with', '', 0);
+            drawSeedingInput(false);
+        });
+    });
 }
 
 /*
