@@ -18,9 +18,7 @@ import itertools
 
 from django.conf import settings
 import mongoengine
-import pkg_resources
 from cjktools import scripts
-from simplestats import comb
 from nltk.probability import FreqDist, LaplaceProbDist
 
 import stroke
@@ -41,6 +39,7 @@ class Similarity(mongoengine.Document):
 
     @classmethod
     def build(cls):
+        print 'Building similarity matrix'
         cls.drop_collection()
         sed = stroke.StrokeEditDistance()
         kanji_set = _get_kanji()
@@ -100,6 +99,7 @@ class Node(mongoengine.Document):
     @classmethod
     def build(cls, cache=None):
         "Builds the initial graph for Q learning."
+        print 'Building neighbourhood graph'
         n = settings.N_NEIGHBOURS_RECALLED
 
         if cache is None:
@@ -111,7 +111,9 @@ class Node(mongoengine.Document):
             node = Node(pivot=kanji, neighbours=[])
 
             weights = {}
-            for weight, partner in cache.get_heap(kanji).get_contents():
+            best_n = sorted(cache.get_heap(kanji).get_contents(),
+                    reverse=True)[:n]
+            for weight, partner in best_n:
                 weights[partner] = weight * dist.prob(partner)
             total_weights = sum(weights.itervalues())
 
