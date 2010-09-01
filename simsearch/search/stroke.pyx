@@ -76,14 +76,14 @@ cdef class StrokeEditDistance:
 
 cdef edit_distance(s_py, t_py):
     cdef int m, n, i, j
-    cdef int table[50][50]
-    cdef int s[50]
-    cdef int t[50]
+    cdef int table[100][100]
+    cdef int s[100]
+    cdef int t[100]
     cdef int up, left, diag, cost
 
     s_len = len(s_py)
     t_len = len(t_py)
-    if s_len > 49 or t_len > 49:
+    if s_len > 99 or t_len > 99:
         raise ValueError, "stroke sequences too long"
 
     for 0 <= i < s_len:
