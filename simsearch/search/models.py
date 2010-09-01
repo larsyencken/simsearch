@@ -14,6 +14,7 @@ Database models for similarity search.
 import os
 import codecs
 import gzip
+import itertools
 
 from django.conf import settings
 import mongoengine
@@ -45,7 +46,10 @@ class Similarity(mongoengine.Document):
         kanji_set = _get_kanji()
 
         cache = heap_cache.FixedSimilarityCache(settings.N_NEIGHBOURS_STORED)
-        for kanji_a, kanji_b in comb.unique_tuples(kanji_set):
+        pairs = ((a, b) for (a, b) in itertools.product(kanji_set, kanji_set)
+                if (a < b))
+            
+        for kanji_a, kanji_b in pairs:
             distance = sed(kanji_a, kanji_b)
             cache.add(kanji_a, kanji_b, 1 - distance)
 
@@ -147,12 +151,15 @@ def build():
 def _get_kanji():
     "Fetches our canonical list of kanji to work with."
     if not hasattr(_get_kanji, '_cached'):
-        istream = pkg_resources.ResourceManager().resource_stream(
-                'cjktools_data', 'lists/char/jp_jyouyou')
-        istream = codecs.getreader("utf8")(istream)
+        kanji_set = set()
+        with codecs.open(settings.STROKE_SOURCE, 'r', 'utf8') as istream:
+            for line in istream:
+                kanji, rest = line.split()
+                kanji_set.add(kanji)
+                assert len(kanji) == 1 and scripts.script_type(kanji) == \
+                        scripts.Script.Kanji
 
-        kanji = scripts.unique_kanji(istream.read())
-        _get_kanji._cached = kanji
+        _get_kanji._cached = kanji_set
 
     return _get_kanji._cached
 

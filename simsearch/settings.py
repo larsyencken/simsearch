@@ -115,20 +115,20 @@ ROOT_URLCONF = 'simsearch.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
 )
 
 INSTALLED_APPS = (
-#    'django.contrib.auth',
-#    'django.contrib.contenttypes',
-#    'django.contrib.sites',
 #    'django.contrib.messages',
     'django.contrib.sessions',
     'djangotoolbox',
     'simsearch.search',
 )
+
+# The source of stroke data for each character
+STROKE_SOURCE = None
+
+# The source of frequency counts for each character
+FREQ_SOURCE = None
 
 try:
     from local_settings import *
@@ -140,5 +140,12 @@ import mongoengine
 mongoengine.connect(MONGODB_NAME, username=MONGODB_USERNAME,
         password=MONGODB_PASSWORD)
 
-# vim: ts=4 sw=4 sts=4 et tw=78:
+# default stroke source
+if STROKE_SOURCE is None:
+    STROKE_SOURCE = os.path.join(DATA_DIR, 'structure', 'strokes_ulrich')
+    
+# default frequency source
+if FREQ_SOURCE is None:
+    FREQ_SOURCE = os.path.join(DATA_DIR, 'corpus', 'jp_char_corpus_counts.gz')
 
+# vim: ts=4 sw=4 sts=4 et tw=78:

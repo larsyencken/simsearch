@@ -20,8 +20,6 @@ from cjktools.exceptions import DomainError
 from cjktools.common import sopen
 from django.conf import settings
 
-_strokes_file = os.path.join(settings.DATA_DIR, 'structure', 'strokes_ulrich')
-
 #----------------------------------------------------------------------------#
 
 cdef class StrokeEditDistance:
@@ -30,12 +28,13 @@ cdef class StrokeEditDistance:
     cdef readonly object stroke_types
     cdef readonly int n_stroke_types
 
-    def __init__(self):
+    def __init__(self, input_file=None):
         self.stroke_types = {}
         self.n_stroke_types = 0
 
+        input_file = input_file or settings.STROKE_SOURCE
         self.signatures = {}
-        i_stream = sopen(_strokes_file)
+        i_stream = sopen(input_file)
         for i, line in enumerate(i_stream):
             kanji, raw_strokes = line.rstrip().split()
             raw_strokes = raw_strokes.split(',')
