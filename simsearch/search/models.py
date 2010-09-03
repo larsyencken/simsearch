@@ -138,6 +138,12 @@ class Node(mongoengine.Document):
 
         return LaplaceProbDist(freq_dist)
 
+    @classmethod
+    def get_coverage(cls):
+        "Returns the set of kanji for which neighbours are stored."
+        db = cls.objects._collection
+        return set(r['_id'] for r in db.find({}, fields=['_id']))
+
 class Trace(mongoengine.Document):
     "A search path through the graph, as taken by a user."
     ip_address = mongoengine.StringField(max_length=15)
