@@ -1,26 +1,21 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# stroke.pyx
-# Lars Yencken <lars.yencken@gmail.com>
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Fri Feb 29 10:37:52 2008
 #
-#----------------------------------------------------------------------------#
+#  stroke.pyx
+#  simsearch
+# 
+#  Created by Lars Yencken on 03-09-2010.
+#  Copyright 2010 Lars Yencken. All rights reserved.
+#
 
 """
 Optimised Levenstein distance calculation between stroke signatures for two
 kanji.
 """
 
-#----------------------------------------------------------------------------#
-
 import os
 
-from cjktools.exceptions import DomainError
 from cjktools.common import sopen
 from django.conf import settings
-
-#----------------------------------------------------------------------------#
 
 cdef class StrokeEditDistance:
     """The edit distance between stroke sequences for both kanji."""
@@ -54,23 +49,20 @@ cdef class StrokeEditDistance:
         return self.n_stroke_types - 1
     
     def raw_distance(self, kanji_a, kanji_b):
-        try:
-            s_py = self.signatures[kanji_a]
-            t_py = self.signatures[kanji_b]
-        except KeyError, e:
-            raise DomainError, e
+        s_py = self.signatures[kanji_a]
+        t_py = self.signatures[kanji_b]
 
         return edit_distance(s_py, t_py)
 
     def __call__(self, kanji_a, kanji_b):
-        try:
-            s_py = self.signatures[kanji_a]
-            t_py = self.signatures[kanji_b]
-        except KeyError, e:
-            raise DomainError, e
+        s_py = self.signatures[kanji_a]
+        t_py = self.signatures[kanji_b]
 
         result = edit_distance(s_py, t_py)
         return float(result) / max(len(s_py), len(t_py))
+    
+    def __contains__(self, kanji):
+        return kanji in self.signatures
 
 #----------------------------------------------------------------------------#
 
@@ -119,4 +111,4 @@ cdef edit_distance(s_py, t_py):
 
     return table[s_len][t_len]
 
-#----------------------------------------------------------------------------#
+# vim: ts=4 sw=4 sts=4 et tw=78:
