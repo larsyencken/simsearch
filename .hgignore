@@ -10,3 +10,4 @@ simsearch/search/stroke.{so,os,c}
 distribute*.tar.gz
 .scon*
 .DS_Store
+*.paths
