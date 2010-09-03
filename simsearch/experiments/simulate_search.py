@@ -24,7 +24,11 @@ from consoleLog import withProgress
 from simsearch.search import stroke, models
 
 def simulate_search(output_file, strategy='greedy'):
-    "Simulate a user search."
+    """
+    Simulate user searches on every query/target pair from the flashcard
+    dataset, using one of the available strategies. The resulting query paths
+    are dumped to the specified file.
+    """
     if strategy == 'greedy':
         search_fn = _greedy_search
     elif strategy == 'shortest':
@@ -37,30 +41,57 @@ def simulate_search(output_file, strategy='greedy'):
         path = search_fn(query, target)
         traces.append((query, target, path))
 
-    _dump_traces(traces, output_file)
+    TraceFile.dump(traces, output_file)
+    print 'Paths dumped to %s' % output_file
 
-def _dump_traces(traces, filename):
-    "Write to a basic human-readable query path file format."
-    with codecs.open(filename, 'w', 'utf8') as ostream:
-        print >> ostream, u"#query\ttarget\tvia"
-        for query, target, path in traces:
-            if path:
-                assert path[0] == query
-                # have at least a partial search
-                if path[-1] == target:
-                    # success
-                    print >> ostream, u'%s\t%s\t[%s]' % (query, target,
-                            ''.join(path[1:-1]))
+class TraceFile(object):
+    "A basic human-readable query path file format."
+    @staticmethod
+    def save(traces, filename):
+        with codecs.open(filename, 'w', 'utf8') as ostream:
+            print >> ostream, u"#query\ttarget\tvia"
+            for query, target, path in traces:
+                if path:
+                    assert path[0] == query
+                    # have at least a partial search
+                    if path[-1] == target:
+                        # success
+                        print >> ostream, u'%s\t%s\t[%s]' % (query, target,
+                                ''.join(path[1:-1]))
+                    else:
+                        # failure with partial path
+                        print >> ostream, u'%s\t(%s)\t[%s]' % (query, target,
+                                ''.join(path[1:]))
+                
                 else:
-                    # failure with partial path
-                    print >> ostream, u'%s\t(%s)\t[%s]' % (query, target,
-                            ''.join(path[1:]))
-            
-            else:
-                # failure without partial path
-                print >> ostream, u'%s\t(%s)\tNone' % (query, target)
+                    # failure without partial path
+                    print >> ostream, u'%s\t(%s)\tNone' % (query, target)
 
-    print 'Paths dumped to %s' % filename
+    @staticmethod
+    def load(filename):
+        traces = []
+        with codecs.open(filename, 'r', 'utf8') as istream:
+            header = istream.next()
+            assert header.startswith('#')
+            for line in istream:
+                query, target, path = line.rstrip().split('\t')
+                if len(target) != 1:
+                    target = target.strip('()')
+                    was_success = False
+                    assert len(target) == 1
+                else:
+                    was_success = True
+
+                if path == 'None':
+                    path = None
+                else:
+                    path = [query] + list(path.strip('[]'))
+                    if was_success:
+                        path.append(target)
+
+                traces.append((query, target, path))
+
+        return traces
 
 def _load_search_examples():
     flashcard_file = os.path.join(settings.DATA_DIR, 'similarity', 'flashcard')
@@ -137,6 +168,10 @@ def _breadth_first_search(query, target, limit=5):
             paths.extend((current + [n]) for n in neighbours)
 
 class cache(object):
+    """
+    A simple cache wrapper whose contents never expire. Useful for reducing
+    expensive calls on small datasets.
+    """
     def __init__(self, f):
         self.f = f
         self._cached = {}
