@@ -23,7 +23,8 @@ from consoleLog import withProgress
 
 from simsearch.search import stroke, models
 
-def simulate_search(output_file, strategy='greedy'):
+def simulate_search(output_file, strategy='greedy',
+        k=settings.N_NEIGHBOURS_RECALLED):
     """
     Simulate user searches on every query/target pair from the flashcard
     dataset, using one of the available strategies. The resulting query paths
@@ -38,10 +39,10 @@ def simulate_search(output_file, strategy='greedy'):
 
     traces = []
     for query, target in withProgress(_load_search_examples()):
-        path = search_fn(query, target)
+        path = search_fn(query, target, k=k)
         traces.append((query, target, path))
 
-    TraceFile.dump(traces, output_file)
+    TraceFile.save(traces, output_file)
     print 'Paths dumped to %s' % output_file
 
 class TraceFile(object):
@@ -104,7 +105,7 @@ def _load_search_examples():
 
     return results
 
-def _greedy_search(query, target, limit=5):
+def _greedy_search(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED):
     """
     Simulate a search between the query and target where the user always
     chooses the next kanji which looks closest to the target.
@@ -119,7 +120,7 @@ def _greedy_search(query, target, limit=5):
         assert path[0] == query
 
         new_query = path[-1]
-        neighbours = _get_neighbours(new_query)
+        neighbours = _get_neighbours(new_query, k=k)
 
         if target in neighbours:
             # Success!
@@ -140,7 +141,8 @@ def _greedy_search(query, target, limit=5):
 
     return path
 
-def _breadth_first_search(query, target, limit=5):
+def _breadth_first_search(query, target, limit=5,
+        k=settings.N_NEIGHBOURS_RECALLED):
     """
     Perform breadth first search to a fixed depth limit, returning the
     shortest path from the query to the target (within the limit).
@@ -150,7 +152,7 @@ def _breadth_first_search(query, target, limit=5):
     while paths:
         current = paths.pop(0)
         current_query = current[-1]
-        neighbours = _get_neighbours(current_query)
+        neighbours = _get_neighbours(current_query, k=k)
 
         if target in neighbours:
             current.append(target)
@@ -176,20 +178,21 @@ class cache(object):
         self.f = f
         self._cached = {}
 
-    def __call__(self, *args):
-        if args not in self._cached:
-            self._cached[args] = self.f(*args)
+    def __call__(self, *args, **kwargs):
+        key = args + tuple(kwargs.items())
+        if key not in self._cached:
+            self._cached[key] = self.f(*args, **kwargs)
 
-        return self._cached[args]
+        return self._cached[key]
 
     def __contains__(self, key):
         # workaround for StrokeEditDistance also acting like a container
         return self.f.__contains__(key)
 
 @cache
-def _get_neighbours(k):
+def _get_neighbours(query, k=settings.N_NEIGHBOURS_RECALLED):
     neighbours = set(n.kanji for n in models.Node.objects.get(
-            pivot=k).neighbours[:settings.N_NEIGHBOURS_RECALLED])
+            pivot=query).neighbours[:k])
     return neighbours
 
 sed = cache(stroke.StrokeEditDistance())
@@ -209,6 +212,11 @@ file."""
             choices=['greedy', 'shortest'], dest='strategy',
             default='greedy',
             help='The search strategy to use ([greedy]/shortest)')
+    
+    parser.add_option('-k', action='store', type='int',
+            default=settings.N_NEIGHBOURS_RECALLED, dest='k',
+            help='The number of neighbours displayed each query [%d]' % \
+            settings.N_NEIGHBOURS_RECALLED)
 
     return parser
 
@@ -220,7 +228,7 @@ def main(argv):
         parser.print_help()
         sys.exit(1)
 
-    simulate_search(args[0], strategy=options.strategy)
+    simulate_search(args[0], strategy=options.strategy, k=options.k)
 
 #----------------------------------------------------------------------------#
 
