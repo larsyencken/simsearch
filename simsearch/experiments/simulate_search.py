@@ -17,6 +17,7 @@ import os
 import sys
 import optparse
 import codecs
+import random
 
 from django.conf import settings
 from consoleLog import withProgress
@@ -34,6 +35,9 @@ def simulate_search(output_file, strategy='greedy',
         search_fn = _greedy_search
     elif strategy == 'shortest':
         search_fn = _breadth_first_search
+    elif strategy == 'random':
+        random.seed(123456789)
+        search_fn = _random_stumble
     else:
         raise ValueError(strategy)
 
@@ -169,6 +173,21 @@ def _breadth_first_search(query, target, limit=5,
             shortest.update(neighbours)
             paths.extend((current + [n]) for n in neighbours)
 
+def _random_stumble(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED):
+    """
+    A worst-case simulation of user search, completely unguided by the
+    target kanji (except for the initial query).
+    """
+    path = [query]
+    while len(path) <= limit:
+        neighbours = _get_neighbours(path[-1], k=k)
+        if target in neighbours:
+            return path + [target]
+
+        path.append(random.choice(list(neighbours)))
+
+    return path
+
 class cache(object):
     """
     A simple cache wrapper whose contents never expire. Useful for reducing
@@ -209,7 +228,7 @@ file."""
     parser = optparse.OptionParser(usage)
 
     parser.add_option('--strategy', action='store', type='choice',
-            choices=['greedy', 'shortest'], dest='strategy',
+            choices=['greedy', 'shortest', 'random'], dest='strategy',
             default='greedy',
             help='The search strategy to use ([greedy]/shortest)')
     
