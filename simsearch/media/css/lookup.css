@@ -40,3 +40,18 @@ input { border:1px solid #505050; font-size:20px; vertical-align:top; }
 .error { position:absolute; color:black; width:400px;
     text-align:center;
 }
+
+#copy {
+    bottom: 0;
+    font: 300 .9em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
+    position: absolute;
+    right: 1em;
+    text-align: right;
+    color: #505050;
+}
+#copy a {
+    color: #303090;
+}
+#copy a:hover {
+    text-decoration: underline;
+}
