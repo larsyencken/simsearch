@@ -19,19 +19,23 @@ from simplestats import basic_stats
 
 from simulate_search import TraceFile
 
-def evaluate_paths(input_file):
+def evaluate_paths(input_file, limit=5):
     print 'Evaluating paths from "%s"' % os.path.basename(input_file)
     traces = TraceFile.load(input_file)
 
+    path_lengths = []
     successes = []
     for (query, target, path) in traces:
         if path and path[-1] == target:
             successes.append(path)
+            path_lengths.append(len(path) - 1)
+        else:
+            path_lengths.append(limit)
 
     print u'Success rate: %d/%d (%.02f%%)' % (len(successes),
             len(traces), 100.0 * len(successes) / len(traces))
-    print u'Mean path length: %.02f (σ = %.02f)' % \
-            basic_stats(len(p) - 1 for p in successes if p)
+
+    print u'Mean path length: %.02f (σ = %.02f)' % basic_stats(path_lengths)
 
 #----------------------------------------------------------------------------#
 
