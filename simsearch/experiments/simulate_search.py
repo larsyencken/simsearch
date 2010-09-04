@@ -230,7 +230,7 @@ file."""
     parser.add_option('--strategy', action='store', type='choice',
             choices=['greedy', 'shortest', 'random'], dest='strategy',
             default='greedy',
-            help='The search strategy to use ([greedy]/shortest)')
+            help='The search strategy to use ([greedy]/shortest/random)')
     
     parser.add_option('-k', action='store', type='int',
             default=settings.N_NEIGHBOURS_RECALLED, dest='k',
