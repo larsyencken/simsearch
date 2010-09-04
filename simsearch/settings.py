@@ -71,9 +71,11 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
+PROJECT_ROOT = os.path.dirname(__file__)
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -103,9 +105,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-#TEMPLATE_CONTEXT_PROCESSORS = (
-#    'django.contrib.messages.context_processors.messages',
-#)
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.contrib.messages.context_processors.messages",
+    'simsearch.context.mercurial_revision',
+)
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
@@ -114,7 +121,7 @@ SESSION_ENGINE = 'mongoengine.django.sessions'
 ROOT_URLCONF = 'simsearch.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates'),
+    os.path.join(PROJECT_ROOT, 'templates'),
 )
 
 INSTALLED_APPS = (

@@ -13,10 +13,6 @@
 {% block body_tags %}onload="initInterface()"{% endblock %}
 
 {% block content %}
-  {% if errorMessage %}
-    <p><i>ERROR: {{ errorMessage }}</i></p>
-  {% endif %}
-
   <div id="lookupBorder" style="position:absolute;top:0;bottom:0;left:0;right:0;width:80%; height:80%; margin:auto; opacity:0.0;">
   </div>
   
@@ -64,7 +60,8 @@
 
   <div class="error" id="errorMessage" style="opacity:0.00"></div>
 
-  <p id="copy">Visual kanji search (<a
-  href="http://bitbucket.org/lars512/simsearch">source available</a>)
+  <p id="copy">
+    Visual kanji search (<a
+    href="http://bitbucket.org/lars512/simsearch/">r{{revision.number}}:{{revision.short}}</a>)
   </p>
 {% endblock %}
