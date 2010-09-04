@@ -163,9 +163,14 @@ def _get_kanji():
         with codecs.open(settings.STROKE_SOURCE, 'r', 'utf8') as istream:
             for line in istream:
                 kanji, rest = line.split()
+                
+                # check for a kanji or hanzi; our Chinese data extends into
+                # the E000-F8FF private use block, so an "Unknown" script is
+                # ok too
+                assert len(kanji) == 1 and scripts.script_type(kanji) in \
+                        (scripts.Script.Kanji, scripts.Script.Unknown)
+
                 kanji_set.add(kanji)
-                assert len(kanji) == 1 and scripts.script_type(kanji) == \
-                        scripts.Script.Kanji
 
         _get_kanji._cached = kanji_set
 
