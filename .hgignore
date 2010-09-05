@@ -11,3 +11,4 @@ distribute*.tar.gz
 .scon*
 .DS_Store
 *.paths
+*.csv
