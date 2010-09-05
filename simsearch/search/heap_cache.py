@@ -52,6 +52,10 @@ class FixedSimilarityCache(object):
         self._sum += similarity
         self._sum_squared += similarity * similarity
 
+
+    def __getitem__(self, kanji):
+        return self.get_heap(kanji)
+
     def get_heap(self, kanji):
         heap = self._heaps.get(kanji)
         if heap is None:
