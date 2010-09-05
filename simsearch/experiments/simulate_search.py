@@ -129,7 +129,7 @@ def _greedy_search(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED,
         neighbours = _get_neighbours(new_query, k=k)
 
         if target in neighbours:
-            if error_rate == 0.0 or random.random < (1 - error_rate)**k:
+            if error_rate == 0.0 or random.random() < (1 - error_rate)**k:
                 # Success!
                 path.append(target)
                 return path
@@ -153,7 +153,7 @@ def _greedy_search(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED,
     return path
 
 def _breadth_first_search(query, target, limit=5,
-        k=settings.N_NEIGHBOURS_RECALLED):
+        k=settings.N_NEIGHBOURS_RECALLED, error_rate=0.0):
     """
     Perform breadth first search to a fixed depth limit, returning the
     shortest path from the query to the target (within the limit).
