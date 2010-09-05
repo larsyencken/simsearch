@@ -25,7 +25,7 @@ from consoleLog import withProgress
 from simsearch.search import stroke, models
 
 def simulate_search(output_file, strategy='greedy',
-        k=settings.N_NEIGHBOURS_RECALLED):
+        k=settings.N_NEIGHBOURS_RECALLED, error_rate=0.0):
     """
     Simulate user searches on every query/target pair from the flashcard
     dataset, using one of the available strategies. The resulting query paths
@@ -43,7 +43,7 @@ def simulate_search(output_file, strategy='greedy',
 
     traces = []
     for query, target in withProgress(_load_search_examples()):
-        path = search_fn(query, target, k=k)
+        path = search_fn(query, target, k=k, error_rate=error_rate)
         traces.append((query, target, path))
 
     TraceFile.save(traces, output_file)
@@ -109,11 +109,13 @@ def _load_search_examples():
 
     return results
 
-def _greedy_search(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED):
+def _greedy_search(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED,
+        error_rate=0.0):
     """
     Simulate a search between the query and target where the user always
     chooses the next kanji which looks closest to the target.
     """
+    assert query != target
     if query not in sed or target not in sed:
         # we can't simulate this search type without using a distance
         # heuristic
@@ -127,21 +129,26 @@ def _greedy_search(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED):
         neighbours = _get_neighbours(new_query, k=k)
 
         if target in neighbours:
-            # Success!
-            path.append(target)
-        else:
-            # Our options are neighbours we haven't tried yet
-            options = neighbours.difference(path)
+            if error_rate == 0.0 or random.random < (1 - error_rate)**k:
+                # Success!
+                path.append(target)
+                return path
 
-            if not options:
-                # Search exhausted =(
-                break
+            # Recognition error =(
+            neighbours.remove(target)
 
-            # Choose the one visually most similar to the target
-            _d, neighbour = min((sed(n, target), n) for n in options)
-            path.append(neighbour)
+        # Our options are neighbours we haven't tried yet
+        options = neighbours.difference(path)
 
-    assert path[0] == query
+        if not options:
+            # Search exhausted =(
+            break
+
+        # Choose the one visually most similar to the target
+        _d, neighbour = min((sed(n, target), n) for n in options)
+        path.append(neighbour)
+
+    assert path[0] == query and path[-1] != target
 
     return path
 
@@ -173,7 +180,8 @@ def _breadth_first_search(query, target, limit=5,
             shortest.update(neighbours)
             paths.extend((current + [n]) for n in neighbours)
 
-def _random_stumble(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED):
+def _random_stumble(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED,
+        error_rate=0.0):
     """
     A worst-case simulation of user search, completely unguided by the
     target kanji (except for the initial query).
@@ -182,7 +190,10 @@ def _random_stumble(query, target, limit=5, k=settings.N_NEIGHBOURS_RECALLED):
     while len(path) <= limit:
         neighbours = _get_neighbours(path[-1], k=k)
         if target in neighbours:
-            return path + [target]
+            if error_rate == 0.0 or random.random() < (1 - error_rate)**k:
+                return path + [target]
+
+            neighbours.remove(target)
 
         path.append(random.choice(list(neighbours)))
 
@@ -237,6 +248,10 @@ file."""
             help='The number of neighbours displayed each query [%d]' % \
             settings.N_NEIGHBOURS_RECALLED)
 
+    parser.add_option('-e', action='store', type='float',
+            default=0.0, dest='error_rate',
+            help='Factor in an estimated recognition error rate [0.0]')
+
     return parser
 
 def main(argv):
@@ -247,7 +262,8 @@ def main(argv):
         parser.print_help()
         sys.exit(1)
 
-    simulate_search(args[0], strategy=options.strategy, k=options.k)
+    simulate_search(args[0], strategy=options.strategy, k=options.k,
+            error_rate=options.error_rate)
 
 #----------------------------------------------------------------------------#
 
