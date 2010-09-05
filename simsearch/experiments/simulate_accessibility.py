@@ -20,11 +20,13 @@ import codecs
 import random
 
 from django.conf import settings
-from simplestats import FreqDist
+from simplestats import FreqDist, basic_stats
 
 from simsearch.search import models
 
-def simulate_accessibility(output_file):
+DEFAULT_THRESHOLD = 0.95
+
+def simulate_accessibility(output_file, threshold=DEFAULT_THRESHOLD):
     print 'Loading frequency distribution'
     dist = FreqDist.from_file(settings.FREQ_SOURCE)
 
@@ -39,6 +41,7 @@ def simulate_accessibility(output_file):
     graph = RestrictedGraph()
 
     print 'Dumping frequencies to %s' % os.path.basename(output_file)
+    n_neighbours = []
     with codecs.open(output_file, 'w', 'utf8') as ostream:
         print >> ostream, u'#n_known,n_accessible'
         print >> ostream, u'%d,%d' % (0, 0)
@@ -47,15 +50,23 @@ def simulate_accessibility(output_file):
         for i, kanji in enumerate(kanji_in_order):
             known_set.add(kanji)
             accessible_set.add(kanji)
-            accessible_set.update(graph[kanji])
+
+            neighbours = graph[kanji]
+            accessible_set.update(neighbours)
+            n_neighbours.append(len(neighbours))
+
             if (i + 1) % 50 == 0:
                 print >> ostream, u'%d,%d' % (len(known_set),
                         len(accessible_set))
         print >> ostream, u'%d,%d' % (len(known_set), len(accessible_set))
 
+    print 'Average neighbourhood size: %.02f (σ = %.02f)' % \
+            basic_stats(n_neighbours)
+
 class RestrictedGraph(object):
-    def __init__(self):
+    def __init__(self, threshold=DEFAULT_THRESHOLD):
         self._graph = models.Similarity.load()
+        self._threshold = threshold
 
     def __getitem__(self, kanji):
         neighbour_heap = self._graph[kanji]
@@ -64,7 +75,7 @@ class RestrictedGraph(object):
 
         first_sim, first_neighbour = ordered_neighbourhood[0]
         cutoff_neighbours = set(n for (s, n) in ordered_neighbourhood
-                if s >= 0.9 * first_sim)
+                if s >= self._threshold * first_sim)
 
         return cutoff_neighbours
 
@@ -79,6 +90,11 @@ are studied in frequency order."""
 
     parser = optparse.OptionParser(usage)
 
+    parser.add_option('-t', action='store', dest='threshold',
+            default=DEFAULT_THRESHOLD, type='float',
+            help='The neighbourhood cutoff threshold [%.02f]' % \
+                    DEFAULT_THRESHOLD)
+
     return parser
 
 def main(argv):
@@ -89,7 +105,7 @@ def main(argv):
         parser.print_help()
         sys.exit(1)
 
-    simulate_accessibility(args[0])
+    simulate_accessibility(args[0], threshold=options.threshold)
 
 #----------------------------------------------------------------------------#
 
