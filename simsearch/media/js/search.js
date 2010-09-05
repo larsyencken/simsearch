@@ -34,6 +34,7 @@ var windowDirty = false;
  *      Draws an error message to the screen.
  */
 function drawError(messageEn, messageJp) {
+    drawSeedingInput(false);
     // Render it, but still hidden, so we can check its size.
     setOpacity('errorMessage', 0.01);
     showElement('errorMessage');
@@ -124,8 +125,6 @@ function drawSeedingInput(useAppear) {
         setOpacity('seedLookup', 1.0);
         document['seedForm'].seedKanji.focus();
     }
-
-    return;
 };
 
 /*
@@ -654,6 +653,28 @@ var g_initState = {
 
 function initInterface() {
     drawSeedingInput();
+    callLater(4, function() { 
+            if (emptyInput()) {
+                drawError('Enter a kanji similar to',
+                        'to the one you want to find.');
+
+                callLater(10, function() {
+                    if (emptyInput()) {
+                    drawError('Still confused?', 'Try searching with 閉.');
+                    callLater(5, function() {
+                            if (emptyInput()) {
+                                document['seedForm'].seedKanji.value = '閉';
+                            }
+                        });
+                    }
+                });
+            }
+        });
+}
+
+function emptyInput() {
+    return currentState == 'seeding' 
+        && document['seedForm'].seedKanji.value == '';
 }
 
 /*
