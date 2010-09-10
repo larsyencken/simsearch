@@ -12,3 +12,4 @@ distribute*.tar.gz
 .DS_Store
 *.paths
 *.csv
+tags
