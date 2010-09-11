@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'djangotoolbox',
     'simsearch.search',
+    'simsearch.translate',
 )
 
 # The source of stroke data for each character

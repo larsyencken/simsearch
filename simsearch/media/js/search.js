@@ -439,7 +439,7 @@ function drawKanji() {
                 style: locToStyle(pivotLoc)
             }, 
             A(
-                {href: g_translatePath + "?kanji=" + pivotKanji},
+                {href: g_translatePath + pivotKanji + "/"},
                 pivotKanji
             )
         );

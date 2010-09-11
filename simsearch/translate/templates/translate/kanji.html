@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block headers %}
+<link rel="stylesheet" href="{{MEDIA_URL}}css/blueprint/screen.css"
+  type="text/css" media="screen, projection">
+<link rel="stylesheet" href="{{MEDIA_URL}}css/blueprint/print.css"
+  type="text/css" media="print">
+<!--[if lt IE 8]>
+  <link rel="stylesheet" href="{{MEDIA_URL}}css/blueprint/ie.css"
+    type="text/css" media="screen, projection">
+<![endif]-->
+
+<style type="text/css">
+  .container { width: 550px; }
+  #pivot { font-size: 200px; vertical-align: middle; text-align: right; }
+  .readings > tbody > tr > th { text-align: right; vertical-align: top; }
+  td, th, p, h2, h3 { font: 300 "Helvetica Neue", Helvetica, "Arial Unicode MS",
+    Arial, sans-serif; }
+  p, li, td, th { font-size: .9em }
+  h3 { font-size: 1.3em; margin-bottom: 0.3em; }
+  h2 { font-size: 2em }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <hr class="space" style="height:100px"/>
+  <div class="span-6 colborder"><div id="pivot">{{translation.kanji}}</div></div>
+  <div class="span-7 last">
+    <hr class="space" />
+    <h3>Readings</h3>
+    <table class="readings">
+    <tbody>
+    <tr>
+      <th width="20%">On</th>
+      <td>
+      {% for r in translation.on_readings %}
+        {{r}}{% if not forloop.last %},{% endif %}
+      {% endfor %}
+      </td>
+    </tr>
+
+    <tr>
+      <th>Kun</th>
+      <td>
+      {% for r in translation.kun_readings %}
+        {{r}}{% if not forloop.last %},{% endif %}
+      {% endfor %}
+      </td>
+    </tr>
+  </tbody>
+  </table>
+
+  <h3>Meaning</h3>
+
+  <ul>
+  {% for v in translation.glosses %}
+    <li>{{v}}</li>
+  {% endfor %}
+  </ul>
+
+  <h3>Find words</h3>
+  <ul>
+    <li><a href="http://foks.info/search/?search_type=Simple&query=*{{translation.kanji}}">containing {{translation.kanji}}</a></li>
+    <li><a href="http://foks.info/search/?search_type=Simple&query={{translation.kanji}}*">starting with {{translation.kanji}}</a></li>
+    <li><a href="http://foks.info/search/?search_type=Simple&query=*{{translation.kanji}}">ending with {{translation.kanji}}</a></li>
+  </ul>
+  </div>
+</div>
+{% endblock %}
