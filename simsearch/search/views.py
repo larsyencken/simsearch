@@ -37,6 +37,7 @@ def translate(request, kanji=None):
     if path and len(path) > 1 and all(map(_is_kanji, path)) \
             and path.endswith(kanji):
         models.Node.update(path)
+        models.Trace.log(request, path)
 
     return HttpResponseRedirect(reverse('translate_kanji', args=[kanji]))
 

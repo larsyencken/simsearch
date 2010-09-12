@@ -216,6 +216,11 @@ class Trace(mongoengine.Document):
     ip_address = mongoengine.StringField(max_length=15)
     path = mongoengine.ListField(mongoengine.StringField(max_length=1))
 
+    @classmethod
+    def log(cls, request, path):
+        ip = request.META['REMOTE_ADDR']
+        cls(ip_address=ip, path=list(path)).save()
+
 def build():
     "Builds the database."
     cache = Similarity.build()
