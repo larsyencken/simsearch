@@ -48,6 +48,8 @@ N_NEIGHBOURS_STORED = 100
 
 N_NEIGHBOURS_RECALLED = 15
 
+GOOGLE_ANALYTICS_CODE = None
+
 # Tradeoff in Pr(a|s) and likelihood of reaching a further target from s'
 UPDATE_GAMMA = 0.7
 
@@ -115,6 +117,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     'simsearch.context.mercurial_revision',
+    'simsearch.context.site_settings',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

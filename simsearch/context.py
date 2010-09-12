@@ -27,4 +27,7 @@ def mercurial_revision(request):
                 'number': fctx.rev(),
             }}
 
+def site_settings(request):
+    return {'settings': settings}
+
 # vim: ts=4 sw=4 sts=4 et tw=78:
