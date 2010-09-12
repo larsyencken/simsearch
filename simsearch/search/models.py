@@ -184,8 +184,6 @@ class Node(mongoengine.Document):
                 q_opt = r_a + gamma * max(q[a.kanji].neighbours).weight
                 
                 a.weight = (1.0 - alpha) * q_old + alpha * q_opt
-                print u"Q(%s, %s): %.02f --> %0.02f" % (s, a.kanji, q_old,
-                        a.weight)
 
             q_s.n_updates += 1
             q_s.save()
