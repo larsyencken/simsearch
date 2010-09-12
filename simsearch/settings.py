@@ -48,6 +48,9 @@ N_NEIGHBOURS_STORED = 100
 
 N_NEIGHBOURS_RECALLED = 15
 
+# Tradeoff in Pr(a|s) and likelihood of reaching a further target from s'
+UPDATE_GAMMA = 0.7
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.

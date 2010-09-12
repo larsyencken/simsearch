@@ -1,43 +1,67 @@
 {% extends "base.html" %}
 
+{% block headers %}
+  <link href="{{MEDIA_URL}}css/lookup.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="{{MEDIA_URL}}js/MochiKit.js"></script>
+  <script type="text/javascript">
+    var g_pivotPath = "{% url search_json %}";
+    var g_translatePath = "{% url search_target %}";
+  </script>
+  <script type="text/javascript" src="{{MEDIA_URL}}js/search.js"></script>
+{% endblock %}
+
+{% block body_tags %}onload="initInterface()"{% endblock %}
+
 {% block content %}
-<h1>Kanji similarity search</h1>
+  <div id="lookupBorder" style="position:absolute;top:0;bottom:0;left:0;right:0;width:80%; height:80%; margin:auto; opacity:0.0;">
+  </div>
+  
+  <!-- Add a hidden dummy pivot to start with, to determine size -->
+  <div style="position:absolute; top:30px; left:30px; opacity:0.0;" id="pivotKanji">鮨</div>
+  
+  <!-- Add hidden navigation links -->
+  <a href="javascript:;"
+    onmouseover="roll('backControl', '{{MEDIA_URL}}img/lookup_back_hover.png')"
+    onmouseout="roll('backControl', '{{MEDIA_URL}}img/lookup_back_static.png')"
+    onclick="previousPivot()"
+    >
+    <div style="opacity:0; position:absolute;" id="backControl">
+      <img src="{{MEDIA_URL}}img/lookup_back_static.png" name="backControl">
+    </div>
+  </a>
+  <a href="javascript:;"
+    onmouseover="roll('resetControl', '{{MEDIA_URL}}img/lookup_reset_hover.png')"
+    onmouseout="roll('resetControl', '{{MEDIA_URL}}img/lookup_reset_static.png')"
+    onclick="switchState('seeding')"
+    >
+    <div style="opacity:0; position:absolute;" id="resetControl">
+      <img src="{{MEDIA_URL}}img/lookup_reset_static.png" name="resetControl">
+    </div>
+  </a>
+  <a href="javascript:;"
+    onmouseover="roll('forwardControl', '{{MEDIA_URL}}img/lookup_forward_hover.png')"
+    onmouseout="roll('forwardControl', '{{MEDIA_URL}}img/lookup_forward_static.png')"
+    onclick="nextPivot()"
+    >
+    <div style="opacity:0; position:absolute;" id="forwardControl">
+      <img src="{{MEDIA_URL}}img/lookup_forward_static.png" name="forwardControl">
+    </div>
+  </a>
 
-<form method="GET">
-  <input type="text" value="{{query}}" name="query" />
-  <input type="submit" value="Search" />
-</form>
+  <!-- Add a simple submission form -->
+  <form name="seedForm" onsubmit="return submitSeed()">
+    <div id="seedLookup">
+      <input type="text" name="seedKanji" size="10"/>
+      <a href="javascript:;" onclick="submitSeed()">
+        <img src="{{MEDIA_URL}}img/magnifier.png" name="magnifier">
+      </a>
+    </div>
+  </form>
 
-{% if messages %}
-<ul class="messages">
-  {% for message in messages %}
-  <li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
-  {% endfor %}
-</ul>
-{% endif %}
+  <div class="error" id="errorMessage" style="opacity:0.00"></div>
 
-{% if results %}
-<hr/>
-<table>
-  <thead>
-    <tr>
-      <th>Score</th><th>Neighbour</th><th>Translate</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for result in results %}
-  <tr>
-    <td>{{result.weight|floatformat:3}}</td>
-    <td>
-      <a href="?query={{result.kanji}}&trace={{trace}}">{{result.kanji}}</a>
-    </td>
-    <td>
-      <a
-      href="http://kub.gakusha.info/kanji/translate/?kanji={{result.kanji}}">translate</a>
-    </td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
-{% endif %}
+  <p id="copy">
+    Visual kanji search (<a
+    href="http://bitbucket.org/lars512/simsearch/">r{{revision.number}}:{{revision.short}}</a>)
+  </p>
 {% endblock %}

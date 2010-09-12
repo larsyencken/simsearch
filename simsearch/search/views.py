@@ -8,51 +8,45 @@
 #
 
 """
+Views for the search app.
 """
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib import messages
 from django.utils import simplejson
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from cjktools import scripts
-from mongoengine.queryset import DoesNotExist
 
 import models
 
-def raw_search(request):
-    context = {}
-    kanji = request.GET.get('query') or ''
-    trace = request.GET.get('trace', '') + kanji
-    context['query'] = kanji
-    context['trace'] = trace
-
-    if kanji:
-        if _is_valid_query(kanji):
-            try:
-                node = models.Node.objects.get(pivot=kanji)
-                context['results'] = node.neighbours
-            except DoesNotExist:
-                messages.add_message(request, messages.INFO,
-                        'Sorry, no matching results for this query.')
-
-        else:
-            messages.add_message(request, messages.WARNING,
-                    'The query should be a single kanji only.')
-
-    return render_to_response('search/index.html', context,
+def search(request):
+    "Renders the inital search display."
+    return render_to_response('search/index.html', {},
             context_instance=RequestContext(request))
 
-def old_search(request):
-    return render_to_response('search/old.html', {},
-            context_instance=RequestContext(request))
+def translate(request, kanji=None):
+    "Updates the query model before redirecting to the real translation."
+    kanji = kanji or request.GET.get('kanji')
+    if not _is_kanji(kanji):
+        raise Http404
 
-def old_search_xhr(request):
-    pivot = request.GET.get('pivot')
-    neighbours = [n.kanji for n in models.Node.objects.get(
-            pivot=pivot).neighbours][:settings.N_NEIGHBOURS_RECALLED]
+    path = request.GET.get('path')
+    if path and len(path) > 1 and all(map(_is_kanji, path)) \
+            and path.endswith(kanji):
+        models.Node.update(path)
+
+    return HttpResponseRedirect(reverse('translate_kanji', args=[kanji]))
+
+def search_json(request, pivot=None):
+    "Returns the search display data as JSON."
+    pivot = pivot or request.GET.get('pivot')
+    node = models.Node.objects.get(pivot=pivot)
+    neighbours = [n.kanji for n in sorted(node.neighbours, reverse=True)]
+    neighbours = neighbours[:settings.N_NEIGHBOURS_RECALLED]
+
     response_dict = {
                 'pivot_kanji': pivot,
                 'tier1': neighbours[:4],
@@ -64,9 +58,8 @@ def old_search_xhr(request):
             mimetype='application/javascript',
         )
 
-def _is_valid_query(kanji):
+def _is_kanji(kanji):
     return len(kanji) == 1 and scripts.script_type(kanji) == \
             scripts.Script.Kanji
 
 # vim: ts=4 sw=4 sts=4 et tw=78:
-

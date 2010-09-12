@@ -178,12 +178,9 @@ function submitSeed() {
 function initLookup(pivotKanjiVal) {
     if (currentIndex != null) {
         var previousKanji = historyStore[currentIndex].pivotKanji;
-        var newDoc = loadJSONDoc(
-                g_pivotPath,
-                {pivot: pivotKanjiVal, previous: previousKanji}
-            );
+        var newDoc = loadJSONDoc(g_pivotPath + pivotKanjiVal + "/", {});
     } else {
-        var newDoc = loadJSONDoc(g_pivotPath, {pivot: pivotKanjiVal});
+        var newDoc = loadJSONDoc(g_pivotPath + pivotKanjiVal + "/", {});
     }
 
     var success = function(obj) {
@@ -433,13 +430,18 @@ function drawKanji() {
     var lookupPlane = getLookupPlane();
     var pivotLoc = toCornerLoc(lookupPlane.center);
     var pivotKanji = historyStore[currentIndex].pivot_kanji;
+    var path = ""
+    for (var i = 0; i < historyStore.length; i++) {
+        path += historyStore[i]['pivot_kanji']
+    }
+
     newPivot = DIV(
             {
                 id: "pivotKanji",
                 style: locToStyle(pivotLoc)
             }, 
             A(
-                {href: g_translatePath + pivotKanji + "/"},
+                {href: g_translatePath + pivotKanji + "/?path=" + path},
                 pivotKanji
             )
         );
