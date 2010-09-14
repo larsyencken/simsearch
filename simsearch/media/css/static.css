@@ -1,0 +1,16 @@
+/*
+ * static.css
+ */
+
+.container { width: 550px; }
+#pivot { font-size: 200px; vertical-align: middle; text-align: right; }
+.readings > tbody > tr > th { text-align: right; vertical-align: top; }
+td, th, p, h1, h2, h3 { font: 300 "Helvetica Neue", Helvetica, "Arial Unicode MS",
+Arial, sans-serif; }
+p, li, td, th { font-size: 1.2em }
+p { margin-left: 2em; } 
+h3 { font-size: 1.3em; margin-bottom: 0.3em; }
+h2 { font-size: 2em; margin-bottom: 0.2em; }
+
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }

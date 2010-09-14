@@ -6,6 +6,16 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>Visual kanji search</title>
+  <link rel="stylesheet" href="{{MEDIA_URL}}css/blueprint/screen.css"
+    type="text/css" media="screen, projection">
+  <link rel="stylesheet" href="{{MEDIA_URL}}css/blueprint/print.css"
+    type="text/css" media="print">
+  <!--[if lt IE 8]>
+    <link rel="stylesheet" href="{{MEDIA_URL}}css/blueprint/ie.css"
+      type="text/css" media="screen, projection">
+  <![endif]-->
+  <link rel="stylesheet" href="{{MEDIA_URL}}css/common.css" 
+    type="text/css" media="screen, projection" />
   {% block headers %}
   {% endblock %}
 
@@ -25,7 +35,23 @@
 </head>
 
 <body {% block body_tags %}{% endblock %}>
+{% block navigation %}
+<p id="nav">
+  <a href="{% url search_index %}">Search</a> /
+  <a href="{% url help %}">Help</a> /
+  <a href="{% url feedback %}">Feedback</a> /
+  <a href="{% url about %}">About</a>
+</p>
+{% endblock %}
+
 {% block content %}
+{% endblock %}
+
+{% block copy %}
+<p id="copy">
+  Visual kanji search (<a
+  href="http://bitbucket.org/lars512/simsearch/">r{{revision.number}}:{{revision.short}}</a>)
+</p>
 {% endblock %}
 </body>
 

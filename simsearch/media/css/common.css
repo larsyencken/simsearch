@@ -1,0 +1,36 @@
+/*
+ * common.css
+ */
+
+
+#copy {
+    bottom: 0;
+    font: 300 1.2em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
+    position: absolute;
+    right: 1em;
+    text-align: right;
+    margin-bottom: 1em;
+    color: #505050;
+}
+#copy a {
+    color: #303090;
+}
+#copy a:hover {
+    text-decoration: underline;
+}
+
+#nav {
+    bottom: top;
+    font: 300 1.2em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
+    position: absolute;
+    right: 1em;
+    margin-top: 1em;
+    text-align: right;
+    color: #505050;
+}
+#nav a {
+    color: #303090;
+}
+#nav a:hover {
+    text-decoration: underline;
+}

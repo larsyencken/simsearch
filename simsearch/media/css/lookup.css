@@ -5,7 +5,7 @@ a:hover { color:blue; }
 a img {border: none;}
 
 .similarKanji {
-    font-size: 2em;
+    font-size: 3em;
     font-family: MS Gothic;
 }
 
@@ -26,7 +26,7 @@ a img {border: none;}
 }
 
 #pivotKanji {
-    font-size: 2em;
+    font-size: 3em;
     font-family: MS Gothic;
 }
 
@@ -35,7 +35,13 @@ a img {border: none;}
     opacity:0.01;
 }
 
-input { border:1px solid #505050; font-size:20px; vertical-align:top; }
+#seedLookup > input {
+    border:1px solid #505050;
+    font-size:20px;
+    vertical-align: top; 
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
 
 .error {
     position: absolute; 
@@ -43,19 +49,4 @@ input { border:1px solid #505050; font-size:20px; vertical-align:top; }
     width: 400px;
     text-align: center;
     font: 300 .9em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
-}
-
-#copy {
-    bottom: 0;
-    font: 300 .9em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
-    position: absolute;
-    right: 1em;
-    text-align: right;
-    color: #505050;
-}
-#copy a {
-    color: #303090;
-}
-#copy a:hover {
-    text-decoration: underline;
 }

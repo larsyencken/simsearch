@@ -12,6 +12,7 @@ from django.conf import settings
 
 _patterns = ['',
     (r'^translate/', include('simsearch.translate.urls')),
+    (r'', include('simsearch.static.urls')),
     (r'', include('simsearch.search.urls')),
 ]
 
