@@ -33,8 +33,8 @@ var windowDirty = false;
  * drawError()
  *      Draws an error message to the screen.
  */
-function drawError(messageEn, messageJp) {
-    drawSeedingInput(false);
+function drawError(messageEn, messageJp, timeout) {
+   // drawSeedingInput(false);
     // Render it, but still hidden, so we can check its size.
     setOpacity('errorMessage', 0.01);
     showElement('errorMessage');
@@ -64,8 +64,11 @@ function drawError(messageEn, messageJp) {
     setElementPosition('errorMessage', errorLoc);
 
     appear('errorMessage');
-    callLater(5, function(){ fade('errorMessage'); });
     drawSeedingInput(false);
+    if (timeout > 0) {
+        callLater(timeout, function(){ fade('errorMessage'); });
+        drawSeedingInput(false);
+    }
 }
 
 /*
@@ -155,14 +158,14 @@ function submitSeed() {
 
     if (value.length != 1) {
         drawError('Please enter a single kanji only.',
-        '漢字を一つ書いてください。');
+        '漢字を一つ書いてください。', 6);
     } else {
         // Check that the input is a kanji.
         logDebug("Ok value: " + value);
         var valueOrd = ord(value);
         if (valueOrd < 12353 || valueOrd > 40869) {
             drawError('Please enter a single kanji only.',
-            '漢字を一つ書いてください。');
+            '漢字を一つ書いてください。', 6);
         } else {
             // Valid!
             switchState("lookup", value);
@@ -205,7 +208,8 @@ function initLookup(pivotKanjiVal) {
     var failure = function(err) {
         logDebug("Couldn't load data: " + err);
         switchState('seeding', null);
-        drawError('No data found for the kanji ' + pivotKanjiVal + '.', '');
+        drawError('No data found for the kanji ' + pivotKanjiVal + '.', '',
+                6);
     }
 
     newDoc.addCallbacks(success, failure);
@@ -658,18 +662,7 @@ function initInterface() {
     callLater(4, function() { 
             if (emptyInput()) {
                 drawError('Enter a kanji similar to',
-                        'to the one you want to find.');
-
-                callLater(10, function() {
-                    if (emptyInput()) {
-                    drawError('Still confused?', 'Try searching with 閉.');
-                    callLater(5, function() {
-                            if (emptyInput()) {
-                                document['seedForm'].seedKanji.value = '閉';
-                            }
-                        });
-                    }
-                });
+                        'to the one you want to find.', 0);
             }
         });
 }

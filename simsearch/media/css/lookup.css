@@ -43,10 +43,10 @@ a img {border: none;}
     margin-bottom: 0px;
 }
 
-.error {
+.searchError {
     position: absolute; 
     color: black;
     width: 400px;
     text-align: center;
-    font: 300 .9em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
+    font: 300 1.2em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
 }
