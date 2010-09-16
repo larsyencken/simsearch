@@ -11,6 +11,11 @@
     text-align: right;
     margin-bottom: 1em;
     color: #505050;
+    background: white;
+    /*
+    border: 1px solid #dddddd;
+    padding: 3px;
+    */
 }
 #copy a {
     color: #303090;
@@ -27,6 +32,7 @@
     margin-top: 1em;
     text-align: right;
     color: #505050;
+    background: white;
 }
 #nav a {
     color: #303090;

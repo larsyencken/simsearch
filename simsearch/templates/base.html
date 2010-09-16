@@ -37,9 +37,9 @@
 <body {% block body_tags %}{% endblock %}>
 {% block navigation %}
 <p id="nav">
-  <a href="{% url search_index %}">Search</a> /
-  <a href="{% url help %}">Help</a> /
-  <a href="{% url feedback %}">Feedback</a> /
+  <a href="{% url search_index %}">Search</a> <span style="color:#bbb">/</span>
+  <a href="{% url help %}">Help</a> <span style="color:#bbb">/</span>
+  <a href="{% url feedback %}">Feedback</a> <span style="color:#bbb">/</span>
   <a href="{% url about %}">About</a>
 </p>
 {% endblock %}
