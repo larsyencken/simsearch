@@ -1,7 +1,61 @@
 {% extends "static/base.html" %}
 
+{% block sub_headers %}
+<style type="text/css" media="screen, projection">
+  #alternatives {
+    padding-left: 4em !important;
+  }
+  #alternatives > li {
+    margin-bottom: 0.8em;
+  }
+</style>
+{% endblock %}
+
 {% block inner_content %}
 <h1>Help</h1>
 
-<!-- XXX write some help text here -->
+<h2>Using similarity search</h2>
+<p>Similarity search is designed to help you find a kanji you don't know, by
+using a similar one as a query. For example, suppose you ran into the kanji
+<span lang="ja">動</span>, which you hadn't seen before. It looks a lot like
+one you do know, <span lang="ja">働</span> from <span>働く</span>
+<em>hataraku</em> "to work". So, you enter <span lang="ja">働</span> as query,
+and can quickly find the unknown kanji.</p>
+
+<p>If you enter a query, and can't immediately see the kanji you're looking
+for, you should click on the next closest match. By doing this a few times, you should hopefully find the kanji you're looking for.</p>
+
+<p>Whilst this form of search is designed for single-kanji queries, you can
+also use it for words by querying any of the kanji in the word. When you find
+your target, its translation page provides single-click queries to word-level
+dictionaries.</p>
+
+<h2>Other good dictionaries</h2>
+
+<p>Whilst searching this way can be fun, it's not appropriate all the time.
+You might not know any similar kanji to the one you're trying to find, or you
+might just have a difficult one. The best strategy in general is to have
+a number of dictionaries you can use, and to pick the best one for the job. We
+recommend:</p>
+
+<ul id="alternatives">
+  <li>
+    <a href="http://foks.info">Forgiving Online Kanji Search</a><br/>
+    A word-level dictionary interface for search-by-pronunciation which can correct for common misreadings.
+  </li>
+  <li>
+    <a href="http://www.csse.monash.edu.au/~jwb/cgi-bin/wwwjdic.cgi?1C">WWWJDIC</a><br/>
+    The reference-level free word-level dictionary for Japanese, which accepts roomaji input, and occasionally has examples of use.
+  </li>
+  <li>
+    <a href=""http://nereid01.cl.ci.i.u-tokyo.ac.jp/kansuke/"">Kansuke</a>
+    <br />
+    <div>A kanji-level dictionary based on a simplified method of counting strokes.</div>
+  </li>
+  <li>
+    <a href="http://kanji.sljfaq.org/draw.html">Handwritten kanji lookup</a>
+    <br />
+    <div>Ben Bullock's handwritten kanji interface, which lets you find a kanji by drawing it.</div>
+  </li>
+</ul>
 {% endblock %}
