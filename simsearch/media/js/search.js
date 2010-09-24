@@ -166,16 +166,17 @@ function switchState(newState, stateArg) {
 function submitSeed() {
     var value = document['seedForm'].seedKanji.value;
 
+    var messageEn = "Please enter a single kanji only.";
+    var messageJp = '一つの漢字を入力してください。';
+
     if (value.length != 1) {
-        drawError('Please enter a single kanji only.',
-        '漢字を一つ書いてください。', 6);
+        drawError(messageEn, messageJp, 6);
     } else {
         // Check that the input is a kanji.
         logDebug("Ok value: " + value);
         var valueOrd = ord(value);
         if (valueOrd < 12353 || valueOrd > 40869) {
-            drawError('Please enter a single kanji only.',
-            '漢字を一つ書いてください。', 6);
+            drawError(messageEn, messageJp, 6);
         } else {
             // Valid!
             switchState("lookup", value);
