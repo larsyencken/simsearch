@@ -11,7 +11,13 @@
 <![endif]-->
 
 <style type="text/css">
-  .container { width: 550px; }
+  .container {
+    width: 550px;
+    height: 330px;
+    position: absolute;
+    margin: auto; top:0; right:0; left:0; bottom:0;
+  }
+
   #pivot { font-size: 200px; vertical-align: middle; text-align: right; }
   .readings > tbody > tr > th { text-align: right; vertical-align: top; }
   td, th, p, h2, h3 { font: 300 "Helvetica Neue", Helvetica, "Arial Unicode MS",
@@ -24,7 +30,6 @@
 
 {% block content %}
 <div class="container">
-  <hr class="space" style="height:100px"/>
   <div class="span-6 colborder"><div id="pivot">{{translation.kanji}}</div></div>
   <div class="span-7 last">
     <hr class="space" />
