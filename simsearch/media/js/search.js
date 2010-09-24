@@ -13,29 +13,29 @@
  */
 
 // The fraction of the screen's width or height to use for the lookup pane.
-var useFraction = 0.8;
+var g_useFraction = 0.8;
 
 // A history of data, so that we can provide backwards and forwards
 // navigation.
-var historyStore = new Array();
+var g_historyStore = new Array();
 var currentIndex = null;
 
 // The current "mode" of the interface.
-var currentState = 'seeding';
+var g_currentState = 'seeding';
 
 // Extra state about what's currently being displayed. Only updated by objects
 // that need it on draw() and clean() operations, primarily to avoid excessive
 // redraws.
-var currentObjects = {}
-var windowDirty = false;
+var g_currentObjects = {}
+var g_windowDirty = false;
 
 /*
  * drawError()
  *      Draws an error message to the screen.
  */
 function drawError(messageEn, messageJp, timeout) {
-   // drawSeedingInput(false);
     // Render it, but still hidden, so we can check its size.
+    g_currentObjects['errorMessage'] = [messageEn, messageJp, timeout]
     setOpacity('errorMessage', 0.01);
     showElement('errorMessage');
 
@@ -64,10 +64,12 @@ function drawError(messageEn, messageJp, timeout) {
     setElementPosition('errorMessage', errorLoc);
 
     appear('errorMessage');
-    drawSeedingInput(false);
+    drawSearch(false);
     if (timeout > 0) {
-        callLater(timeout, function(){ fade('errorMessage'); });
-        drawSeedingInput(false);
+        callLater(timeout, function(){
+            fade('errorMessage');
+            delete g_currentObjects["errorMessage"];
+        });
     }
 }
 
@@ -108,6 +110,14 @@ function getSeedingInputSize() {
  *      Draw the initial input dialog.
  */
 function drawSeedingInput(useAppear) {
+    drawSearch(useAppear);
+    if ("errorMessage" in g_currentObjects) {
+        var em = g_currentObjects["errorMessage"];
+        drawError(em[0], em[1], em[2]);
+    }
+}
+
+function drawSearch(useAppear) {
     if (useAppear == null) {
         useAppear = true;
     }
@@ -128,7 +138,7 @@ function drawSeedingInput(useAppear) {
         setOpacity('seedLookup', 1.0);
         document['seedForm'].seedKanji.focus();
     }
-};
+}
 
 /*
  * clearSeedingInput()
@@ -145,8 +155,8 @@ function clearSeedingInput() {
  *      Switches from one UI state to another.
  */
 function switchState(newState, stateArg) {
-    g_clearState[currentState]();
-    currentState = newState;
+    g_clearState[g_currentState]();
+    g_currentState = newState;
     g_initState[newState](stateArg);
 }
 
@@ -180,7 +190,7 @@ function submitSeed() {
  */
 function initLookup(pivotKanjiVal) {
     if (currentIndex != null) {
-        var previousKanji = historyStore[currentIndex].pivotKanji;
+        var previousKanji = g_historyStore[currentIndex].pivotKanji;
         var newDoc = loadJSONDoc(g_pivotPath + pivotKanjiVal + "/", {});
     } else {
         var newDoc = loadJSONDoc(g_pivotPath + pivotKanjiVal + "/", {});
@@ -192,14 +202,14 @@ function initLookup(pivotKanjiVal) {
         if (currentIndex == null) {
             // First time.
             currentIndex = 0;
-        } else if (historyStore.length > currentIndex + 1) {
+        } else if (g_historyStore.length > currentIndex + 1) {
             // Truncation needed!
             currentIndex++;
-            historyStore.length = currentIndex;
+            g_historyStore.length = currentIndex;
         } else {
             currentIndex++;
         }
-        historyStore[currentIndex] = obj;
+        g_historyStore[currentIndex] = obj;
 
         drawBorder();
         drawLookup();
@@ -220,10 +230,9 @@ function initLookup(pivotKanjiVal) {
  *      Redraws the whole screen, using the existing kanji.
  */
 function fullRedraw() {
-    windowDirty = true;
-    g_drawState[currentState]();
-    windowDirty = false;
-    return;
+    g_windowDirty = true;
+    g_drawState[g_currentState]();
+    g_windowDirty = false;
 };
 
 // Redraw the window if it is resized.
@@ -236,8 +245,8 @@ window.onresize = fullRedraw;
 function getLookupPlane() {
     var windowSize = getWindowSize();
     var lookupPlane = {};
-    lookupPlane.w = useFraction*windowSize.w;
-    lookupPlane.h = useFraction*windowSize.h;
+    lookupPlane.w = g_useFraction*windowSize.w;
+    lookupPlane.h = g_useFraction*windowSize.h;
 
     // Make it square.
     if (lookupPlane.w < lookupPlane.h) {
@@ -265,7 +274,7 @@ function getLookupPlane() {
  *      Draws a border around the kanji area.
  */
 function drawBorder() {
-    if (currentObjects['border'] && !windowDirty) {
+    if (g_currentObjects['border'] && !g_windowDirty) {
         return;
     }
     logDebug('Drawing border');
@@ -286,7 +295,7 @@ function drawBorder() {
     swapDOM("lookupBorder", newBorder);
 
     setOpacity("lookupBorder", 1.0);
-    currentObjects['border'] = true;
+    g_currentObjects['border'] = true;
 };
 
 /* 
@@ -296,7 +305,7 @@ function drawBorder() {
 function clearBorder() {
     logDebug('Clearing border');
     setOpacity('lookupBorder', 0.0);
-    currentObjects['border'] = false;
+    g_currentObjects['border'] = false;
 }
 
 /*
@@ -376,7 +385,7 @@ function drawControls() {
         hideElement("forwardControl");
     }
 
-    currentObjects['controls'] = true;
+    g_currentObjects['controls'] = true;
 
     return;
 };
@@ -392,7 +401,7 @@ function clearKanji() {
     }
     setOpacity('pivotKanji', 0.0);
 
-    currentObjects['controls'] = false;
+    g_currentObjects['controls'] = false;
 }
 
 /*
@@ -407,7 +416,7 @@ function clearLookup() {
     clearBorder();
 
     // Clear the history too.
-    historyStore.length = 0;
+    g_historyStore.length = 0;
     currentIndex = null;
     return;
 }
@@ -433,10 +442,10 @@ function drawKanji() {
     // Draw the new pivot.
     var lookupPlane = getLookupPlane();
     var pivotLoc = toCornerLoc(lookupPlane.center);
-    var pivotKanji = historyStore[currentIndex].pivot_kanji;
+    var pivotKanji = g_historyStore[currentIndex].pivot_kanji;
     var path = ""
-    for (var i = 0; i < historyStore.length; i++) {
-        path += historyStore[i]['pivot_kanji']
+    for (var i = 0; i < g_historyStore.length; i++) {
+        path += g_historyStore[i]['pivot_kanji']
     }
 
     newPivot = DIV(
@@ -451,9 +460,9 @@ function drawKanji() {
         );
     swapDOM("pivotKanji", newPivot);
 
-    var tier1 = historyStore[currentIndex].tier1;
-    var tier2 = historyStore[currentIndex].tier2;
-    var tier3 = historyStore[currentIndex].tier3;
+    var tier1 = g_historyStore[currentIndex].tier1;
+    var tier2 = g_historyStore[currentIndex].tier2;
+    var tier3 = g_historyStore[currentIndex].tier3;
 
     drawTier(tier1, 1);
     drawTier(tier2, 2);
@@ -596,7 +605,7 @@ function hasFuture() {
     if (currentIndex == null) {
         return false;
     } else {
-        return (currentIndex < historyStore.length - 1);
+        return (currentIndex < g_historyStore.length - 1);
     }
 }
 
@@ -668,7 +677,7 @@ function initInterface() {
 }
 
 function emptyInput() {
-    return currentState == 'seeding' 
+    return g_currentState == 'seeding' 
         && document['seedForm'].seedKanji.value == '';
 }
 
