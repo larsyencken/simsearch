@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+#
+#  SConscript
+#  simsearch
+# 
+#  Created by Lars Yencken on 27-08-2010.
+#  Copyright 2010 Lars Yencken. All rights reserved.
+#
+
+"""
+Scons build file for structure extensions.
+"""
+
+#----------------------------------------------------------------------------#
+
+Import('env')
+
+#----------------------------------------------------------------------------#
+
+stroke = env.Cython('stroke.c', 'stroke.pyx')
+env.SharedLibrary('stroke', stroke)
+
+#----------------------------------------------------------------------------#

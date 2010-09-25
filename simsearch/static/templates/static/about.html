@@ -1,0 +1,50 @@
+{% extends "static/base.html" %}
+
+{% block inner_content %}
+<h1>About SimSearch</h1>
+
+<h2>What is it?</h2>
+
+<p>SimSearch is a visual search-by-similarity for Japanese kanji. Suppose you
+encounter a kanji you don't know, but it looks very similar to one you do know.
+In this case, you can enter in the one you know as a query, and navigate
+through the similarity space until you find the kanji you are looking for.</p>
+
+<h2>How does it work?</h2>
+
+<p>In order to determine how similar two kanji are to one another, we use the
+<em>stroke edit distance</em> between the two kanji [1]. In other words, we
+look at the sequence of strokes used to write each character, and determine how
+many changes you'd need to make to turn one kanji's series of strokes into that
+of the other kanji. Research so far has that this measure best matches human
+judgements of similarity [2].</p>
+
+<p>Secondly, search is also adaptive. That is, it will adapt to whatever people
+actually find similar when they do searches using the system. For this, we use
+Q-learning [3], a well known algorithm for learning the best action to take in
+a state space. Q-learning has been used in a wide variety of search
+applications, including game players for board games which learn from
+experience.</p>
+
+<h2>How can I help?</h2>
+
+<p>If you're a learner of Japanese, or a native speaker, please give the system
+a try, and send me some <a href="{% url feedback %}">feedback</a>. If you're a
+programmer, note that SimSearch is open source, so feel free to suggest new
+improvements, or even try running your own site.</p>
+
+<hr>
+
+<h2>References</h2>
+<ol>
+<li>Wikipedia: <a
+href="http://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein
+distance</a></li>
+<li>Yencken, Lars and Baldwin, Timothy: “Measuring and predicting orthographic
+associations: modelling the similarity of Japanese kanji”, in <em>Proceedings of
+COLING 2008</em>, Manchester, UK (2008)</li>
+<li>Wikipedia: <a
+href="http://en.wikipedia.org/wiki/Q-learning">Q-learning</a></li>
+</ol>
+
+{% endblock %}

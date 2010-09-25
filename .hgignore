@@ -1,0 +1,15 @@
+syntax: glob
+*.pyc
+*.pyo
+*.swp
+*.orig
+*-env
+local_settings.py
+simsearch/search/stroke.{so,os,c}
+*.log
+distribute*.tar.gz
+.scon*
+.DS_Store
+*.paths
+*.csv
+tags

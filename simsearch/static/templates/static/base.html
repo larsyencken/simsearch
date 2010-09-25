@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block headers %}
+<link rel="stylesheet" href="{{MEDIA_URL}}css/static.css" type="text/css"
+  media="screen, projection, print">
+{% block sub_headers %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="span-15 last">
+    <hr class="space" style="height: 4em" />
+    {% block inner_content %}
+    {% endblock %}
+  </div>
+</div>
+{% endblock %}
