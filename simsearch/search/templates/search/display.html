@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block headers %}
+  <link href="{{MEDIA_URL}}css/lookup.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="{{MEDIA_URL}}js/raphael-min.js"></script>
+  <script type="text/javascript" src="{{MEDIA_URL}}js/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="{{MEDIA_URL}}js/jquery.sizes.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    {% autoescape off %}
+    var data = {{data}};
+    {% endautoescape %}
+    var tier_angles = {};
+
+    function setup_canvas() {
+      $('svg').remove();
+      var eps = 5;
+      var nav = $('#nav');
+      var margin = nav.margin().top + nav.margin().bottom + nav.height();
+      margin *= 2;
+      var x = margin;
+      var y = margin;
+      var canvas_width = document.width - 2 * margin;
+      var canvas_height = document.height - 2 * margin;
+      if (canvas_width < canvas_height) {
+        y += (canvas_height - canvas_width) / 2;
+        canvas_height = canvas_width;
+      } else {
+        x += (canvas_width - canvas_height) / 2;
+        canvas_width = canvas_height;
+      }
+      var paper = Raphael(x, y, canvas_width, canvas_height);
+      paper.rect(eps, eps, canvas_width - 2 * eps, canvas_height - 2 * eps,
+          30).attr("stroke", "#999").attr('fill', 'white');
+      return paper;
+    }
+
+    function get_min_dim(paper) {
+      if (paper.width < paper.height) {
+        return paper.width;
+      } else {
+        return paper.height;
+      }
+    }
+
+    function draw_kanji(paper) {
+      var size = get_min_dim(paper) / 20;
+      var d = function(x, y, k) {
+        var e = paper.text(x, y, k).attr("font-size", size);
+        e.mouseover(function(event) {
+          this.attr({fill: 'blue', opacity: 1.0});
+        });
+        e.mouseout(function(event) {
+          this.attr({fill: 'black', opacity: this.real_opacity});
+        });
+        e.real_opacity = 1.0;
+        return e;
+      };
+      var pivot = d(paper.width / 2, paper.height / 2, data['kanji']);
+      pivot.node.onclick = function() {
+        window.location.href = '{% url search_target %}?kanji=' + data['kanji'] + '&path=' + data['path'];
+      };
+      draw_tier(data['tier1'], 1, paper, d);
+      draw_tier(data['tier2'], 2, paper, d);
+      draw_tier(data['tier3'], 3, paper, d);
+    }
+
+    function draw_tier(ks, n, paper, draw_f) {
+      var angle_frac = 2 * Math.PI / ks.length; 
+      var radius = n * get_min_dim(paper) / 8;
+      var initial_frac;
+      if (!(n in tier_angles)) {
+        initial_frac = Math.random() * angle_frac;
+        tier_angles[n] = initial_frac;
+      } else {
+        initial_frac = tier_angles[n];
+      }
+      var center_w = paper.width / 2;
+      var center_h = paper.height / 2;
+
+      var opacity = 1.0 - (n + 0.5) * 0.2;
+
+      for (var i = 0; i < ks.length; i++) {
+        var kanji = ks[i];
+
+        var angle = initial_frac + i * angle_frac;
+        var x = center_w + radius * Math.cos(angle);
+        var y = center_h + radius * Math.sin(angle);
+
+        var e = draw_f(x, y, kanji);
+        e.attr('opacity', opacity);
+        e.real_opacity = opacity;
+        e.node.onclick = function() {
+          window.location.href = '{% url search_index %}?kanji=' + kanji +
+              '&path=' + data['path'];
+        };
+      }
+    }
+
+    function redraw() {
+      var paper = setup_canvas();
+      draw_kanji(paper);
+    }
+
+    $(document).ready(function() {
+      redraw(); 
+      $(window).resize(redraw);
+    });
+  </script>
+{% endblock %}

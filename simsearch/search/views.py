@@ -22,9 +22,40 @@ from cjktools import scripts
 
 import models
 
-def search(request):
-    "Renders the inital search display."
-    return render_to_response('search/index.html', {},
+def index(request):
+    "Renders the search display."
+    kanji = request.GET.get('kanji', '')
+    kanji_ok = _is_kanji(kanji)
+
+    if not kanji or not kanji_ok:
+        # show the search dialog
+        context = {
+                'kanji': kanji,
+                'kanji_ok': kanji_ok,
+            }
+        return render_to_response('search/index.html', context,
+                context_instance=RequestContext(request))
+
+    # show the search plane instead
+
+    # make sure the path is ok
+    path = request.GET.get('path', '')
+    if not all(map(_is_kanji, path)):
+        path = []
+
+    path = list(path) + [kanji]
+    node = models.Node.objects.get(pivot=kanji)
+    neighbours = [n.kanji for n in sorted(node.neighbours, reverse=True)]
+    neighbours = neighbours[:settings.N_NEIGHBOURS_RECALLED]
+
+    context = {'data': simplejson.dumps({
+                    'kanji': kanji,
+                    'tier1': neighbours[:4],
+                    'tier2': neighbours[4:9],
+                    'tier3': neighbours[9:],
+                    'path': ''.join(path),
+                })}
+    return render_to_response('search/display.html', context,
             context_instance=RequestContext(request))
 
 def translate(request, kanji=None):
@@ -60,7 +91,7 @@ def search_json(request, pivot=None):
         )
 
 def _is_kanji(kanji):
-    return len(kanji) == 1 and scripts.script_type(kanji) == \
-            scripts.Script.Kanji
+    return isinstance(kanji, unicode) and len(kanji) == 1 \
+            and scripts.script_type(kanji) == scripts.Script.Kanji
 
 # vim: ts=4 sw=4 sts=4 et tw=78:
