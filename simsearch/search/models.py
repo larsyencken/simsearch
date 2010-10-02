@@ -160,9 +160,13 @@ class Node(mongoengine.Document):
 
     @classmethod
     def update(cls, path):
+        path = cls._remove_cycles(path)
         nodes = cls.objects.filter(pivot__in=list(path))
         if len(nodes) != len(path):
-            raise ValueError('path not found in database')
+            found_pivots = set(n.pivot for n in nodes)
+            missing_kanji = [k for k in path if k not in found_pivots][0]
+            raise ValueError('node not found in database for kanji %s' % \
+                    missing_kanji.encode('utf8'))
 
         # cache Q(s, a) for the subgraph we're interested in
         q = cls._cache_subgraph(nodes)
@@ -205,6 +209,21 @@ class Node(mongoengine.Document):
             q[node.pivot] = node
 
         return q
+
+    @staticmethod
+    def _remove_cycles(path):
+        # an O(n^2) method is good enough
+        i = 0
+        while i < len(path):
+            kanji = path[i]
+            j = path.find(kanji, i + 1)
+            if j >= 0:
+                # a cycle! trim the path to skip it
+                path = path[:i] + path[j:]
+            else:
+                i += 1
+
+        return path
 
     def __unicode__(self):
         return self.pivot
