@@ -41,6 +41,8 @@ DATABASES = {
 MONGODB_NAME = 'simsearch'
 MONGODB_USERNAME = None
 MONGODB_PASSWORD = None
+MONGODB_HOST = 'localhost'
+MONDOGB_PORT = 27017
 
 UTF8_BYTES_PER_CHAR = 3 # for CJK chars
 
@@ -153,7 +155,7 @@ except ImportError:
 # connect to our database
 import mongoengine
 mongoengine.connect(MONGODB_NAME, username=MONGODB_USERNAME,
-        password=MONGODB_PASSWORD)
+        password=MONGODB_PASSWORD, host=MONGODB_HOST, port=MONGODB_PORT)
 
 # default stroke source
 if STROKE_SOURCE is None:
