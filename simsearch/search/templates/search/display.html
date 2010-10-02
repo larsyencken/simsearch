@@ -49,6 +49,7 @@
         e.real_opacity = 1.0;
         e.mouseover(function(event) {
           this.attr({fill: 'blue', opacity: 1.0});
+          this.node.style.cursor = 'pointer';
         });
         e.mouseout(function(event) {
           this.attr({fill: 'black', opacity: this.real_opacity});
