@@ -10,8 +10,10 @@
     var data = {{data}};
     {% endautoescape %}
     var tier_angles = {};
+    var canvas = null;
 
     function setup_canvas() {
+      console.log('Setting up canvas');
       $('svg').remove();
       var eps = 5;
       var nav = $('#nav');
@@ -19,8 +21,8 @@
       margin *= 2;
       var x = margin;
       var y = margin;
-      var canvas_width = document.width - 2 * margin;
-      var canvas_height = document.height - 2 * margin;
+      var canvas_width = window.innerWidth - 2 * margin;
+      var canvas_height = window.innerHeight - 2 * margin;
       if (canvas_width < canvas_height) {
         y += (canvas_height - canvas_width) / 2;
         canvas_height = canvas_width;
@@ -43,6 +45,7 @@
     }
 
     function draw_kanji(paper, animate) {
+      console.log('Redrawing kanji');
       var size = get_min_dim(paper) / 20;
       var d = function(x, y, k) {
         var e = paper.text(x, y, k).attr("font-size", size);
@@ -113,6 +116,7 @@
     function redraw(animate) {
       var paper = setup_canvas();
       draw_kanji(paper, animate);
+      canvas = paper;
     }
 
     $(document).ready(function() {
