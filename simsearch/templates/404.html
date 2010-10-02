@@ -1,0 +1,8 @@
+{% extends "static/base.html" %}
+
+{% block inner_content %}
+<h1>Page not found</h1>
+<p>Hi there! I'm not sure which page you were looking for, but we don't seem
+to have it. If you're lost, <a href="{% url search_index %}">search page</a>
+is always a good place to start.</p>
+{% endblock %}
