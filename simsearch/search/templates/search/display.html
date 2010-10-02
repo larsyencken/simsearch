@@ -100,10 +100,12 @@
         } else {
           e.attr('opacity', opacity);
         }
-        e.node.onclick = function() {
-          window.location.href = '{% url search_index %}?kanji=' + kanji +
-              '&path=' + data['path'];
-        };
+        e.node.onclick = function(k) {
+          return function() {
+            window.location.href = '{% url search_index %}?kanji=' + k +
+                '&path=' + data['path'];
+          };
+        }(kanji);
       }
     }
 
