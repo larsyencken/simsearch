@@ -33,6 +33,8 @@ def index(request):
                 'kanji': kanji,
                 'kanji_ok': kanji_ok,
             }
+        if kanji:
+            context['error'] = 'Please enter a single kanji only as input.'
         return render_to_response('search/index.html', context,
                 context_instance=RequestContext(request))
 

@@ -24,6 +24,11 @@
     text-decoration: underline;
 }
 
+a, a:hover { color: #303090; }
+a:hover {
+    text-decoration: underline;
+}
+
 #nav {
     bottom: top;
     font: 300 1.2em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
