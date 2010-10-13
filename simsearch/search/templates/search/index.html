@@ -4,6 +4,8 @@
   <link href="{{MEDIA_URL}}css/lookup.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
+{% block body_tags %}onload="document.getElementById('seedInput').focus()"{% endblock %}
+
 {% block content %}
 <div id="seedLookup">
   <form method="GET">
