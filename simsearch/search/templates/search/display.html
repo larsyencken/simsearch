@@ -13,7 +13,6 @@
     var canvas = null;
 
     function setup_canvas() {
-      console.log('Setting up canvas');
       $('svg').remove();
       var eps = 5;
       var nav = $('#nav');
@@ -45,7 +44,6 @@
     }
 
     function draw_kanji(paper, animate) {
-      console.log('Redrawing kanji');
       var size = get_min_dim(paper) / 20;
       var d = function(x, y, k) {
         var e = paper.text(x, y, k).attr("font-size", size);
