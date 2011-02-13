@@ -8,6 +8,7 @@
 #
 
 """
+Adds a command to automatically run a build for each app used.
 """
 
 from django.core.management.base import BaseCommand, CommandError
@@ -17,10 +18,17 @@ class Command(BaseCommand):
     help = 'Builds the initial similarity database.'
 
     def handle(self, *args, **kwargs):
+        found_one = False
         for app_name in settings.INSTALLED_APPS:
-            app = __import__(app_name)
-            if hasattr(app, 'build'):
-                print app
-                app.build()
+            module = __import__(app_name)
+            for part in app_name.split('.')[1:]:
+                module = getattr(module, part)
+
+            if hasattr(module, 'build'):
+                module.build()
+                found_one = True
+
+        if not found_one:
+            raise Exception('no apps had build commands')
 
 # vim: ts=4 sw=4 sts=4 et tw=78:

@@ -19,7 +19,8 @@ from distutils import sysconfig
 #----------------------------------------------------------------------------#
 
 # Default include path for python, version inspecific.
-scons_python_version = sysconfig.get_config_var('VERSION')
+#scons_python_version = sysconfig.get_config_var('VERSION')
+scons_python_version = '2.7'
 python_version = ARGUMENTS.get('python') or scons_python_version 
 
 print 'Using Python %s' % python_version
