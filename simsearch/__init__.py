@@ -14,8 +14,13 @@ The server for simsearch.
 import os
 
 import flask
+from cjktools import scripts
+import mercurial.hg
+import mercurial.ui
+import mercurial.node
+import simplejson
 
-from mercurial import ui, hg, node
+import models
 
 app = flask.Flask(__name__)
 app.config.from_object('simsearch.settings')
@@ -38,6 +43,78 @@ def about():
     c = base_context()
     return flask.render_template("static/about.html", **c)
 
+@app.route('/')
+def index():
+    "Renders the search display."
+    kanji = flask.request.args.get('kanji', '')
+    kanji_ok = _is_kanji(kanji)
+    context = base_context()
+
+    if not kanji or not kanji_ok:
+        # show the search dialog
+        context.update({
+                'kanji': kanji,
+                'kanji_ok': kanji_ok,
+            })
+        if kanji:
+            context['error'] = 'Please enter a single kanji only as input.'
+        return flask.render_template('search/index.html', **context)
+
+    # show the search plane instead
+
+    # make sure the path is ok
+    path = flask.request.args.get('path', '')
+    if not all(map(_is_kanji, path)):
+        path = []
+
+    path = list(path) + [kanji]
+    node = models.Node.objects.get(pivot=kanji)
+    neighbours = [n.kanji for n in sorted(node.neighbours, reverse=True)]
+    neighbours = neighbours[:app.conf['N_NEIGHBOURS_RECALLED']]
+
+    context.update({'data': simplejson.dumps({
+                    'kanji': kanji,
+                    'tier1': neighbours[:4],
+                    'tier2': neighbours[4:9],
+                    'tier3': neighbours[9:],
+                    'path': ''.join(path),
+                })})
+    return flask.render_template('search/display.html', **context)
+
+@app.route('/translate/<kanji>/')
+def translate(kanji):
+    "Updates the query model before redirecting to the real translation."
+    kanji = kanji or flask.request.args.get('kanji')
+    if not _is_kanji(kanji):
+        flask.abort(404)
+
+    path = flask.request.args.get('path')
+    if path and len(path) > 1 and all(map(_is_kanji, path)) \
+            and path.endswith(kanji):
+        models.Node.update(path)
+        models.Trace.log(flask.request, path)
+
+    return flask.redirect(flask.url_for('translate'), args=[kanji])
+
+@app.route('/search/json/<pivot>/')
+def search_json(pivot):
+    "Returns the search display data as JSON."
+    pivot = pivot or flask.request.args.get('pivot')
+    node = models.Node.objects.get(pivot=pivot)
+    neighbours = [n.kanji for n in sorted(node.neighbours, reverse=True)]
+    neighbours = neighbours[:app.conf['N_NEIGHBOURS_RECALLED']]
+
+    return flask.jsonify(
+            pivot_kanji=pivot,
+            tier1=neighbours[:4],
+            tier2=neighbours[4:9],
+            tier3=neighbours[9:],
+        )
+
+def _is_kanji(kanji):
+    return isinstance(kanji, unicode) and len(kanji) == 1 \
+            and scripts.script_type(kanji) == scripts.Script.Kanji
+
 def base_context():
     c = {}
     c.update(mercurial_revision())
@@ -46,11 +123,11 @@ def base_context():
 
 def mercurial_revision():
     project_base = os.path.join(app.config['PROJECT_ROOT'], '..')
-    repo = hg.repository(ui.ui(), project_base)
+    repo = mercurial.hg.repository(mercurial.ui.ui(), project_base)
     fctx = repo.filectx(project_base, 'tip')
 
     return {'revision': {
-                'short': node.short(fctx.node()),
+                'short': mercurial.node.short(fctx.node()),
                 'number': fctx.rev(),
             }}
 

@@ -15,7 +15,8 @@ kanji.
 import os
 
 from cjktools.common import sopen
-from django.conf import settings
+
+from simsearch import settings
 
 cdef class StrokeEditDistance:
     """The edit distance between stroke sequences for both kanji."""

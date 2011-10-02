@@ -101,6 +101,6 @@ env.Append(BUILDERS={'Cython': pyxbuild})
 
 #----------------------------------------------------------------------------#
 
-SConscript('simsearch/search/SConscript', exports='env')
+SConscript('simsearch/SConscript', exports='env')
 
 #----------------------------------------------------------------------------#

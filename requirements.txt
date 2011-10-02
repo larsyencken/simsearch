@@ -8,3 +8,4 @@ pyyaml
 nltk
 mercurial
 flask
+simplejson

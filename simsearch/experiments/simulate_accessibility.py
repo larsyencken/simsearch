@@ -19,9 +19,9 @@ import optparse
 import codecs
 import random
 
-from django.conf import settings
 from simplestats import FreqDist, basic_stats
 
+from simsearch import settings
 from simsearch.search import models
 
 DEFAULT_THRESHOLD = 0.95

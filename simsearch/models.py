@@ -16,13 +16,15 @@ import codecs
 import gzip
 import itertools
 
-from django.conf import settings
 import mongoengine
 from cjktools import scripts
+from cjktools.resources import kanjidic
 from nltk.probability import FreqDist, LaplaceProbDist
 
 import stroke
 import heap_cache
+
+from simsearch import settings
 
 class Similarity(mongoengine.Document):
     "Raw similarity scores for kanji pairs."
@@ -238,10 +240,31 @@ class Trace(mongoengine.Document):
         ip = request.META['REMOTE_ADDR']
         cls(ip_address=ip, path=list(path)).save()
 
+class Translation(mongoengine.Document):
+    "A per-kanji dictionary entry of readings and translations."
+    kanji = mongoengine.StringField(max_length=1, primary_key=True)
+    on_readings = mongoengine.ListField(mongoengine.StringField())
+    kun_readings = mongoengine.ListField(mongoengine.StringField())
+    glosses = mongoengine.ListField(mongoengine.StringField())
+
+    @classmethod
+    def build(cls):
+        cls.drop_collection()
+        kjd = kanjidic.Kanjidic()
+        for entry in kjd.itervalues():
+            translation = cls(
+                    kanji=entry.kanji,
+                    on_readings=entry.on_readings,
+                    kun_readings=entry.kun_readings,
+                    glosses = entry.gloss,
+                )
+            translation.save()
+
 def build():
     "Builds the database."
     cache = Similarity.build()
     Node.build(cache)
+    Translation.build()
 
 #----------------------------------------------------------------------------#
 
