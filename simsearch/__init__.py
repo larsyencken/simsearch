@@ -70,7 +70,7 @@ def index():
     path = list(path) + [kanji]
     node = models.Node.objects.get(pivot=kanji)
     neighbours = [n.kanji for n in sorted(node.neighbours, reverse=True)]
-    neighbours = neighbours[:app.conf['N_NEIGHBOURS_RECALLED']]
+    neighbours = neighbours[:app.config['N_NEIGHBOURS_RECALLED']]
 
     context.update({'data': simplejson.dumps({
                     'kanji': kanji,
@@ -94,9 +94,15 @@ def translate(kanji):
         models.Node.update(path)
         models.Trace.log(flask.request, path)
 
-    return flask.redirect(flask.url_for('translate'), args=[kanji])
+    t = models.Translation.objects.get(kanji=kanji)
+    if t is None:
+        flask.abort(404)
 
-@app.route('/search/json/<pivot>/')
+    c = base_context()
+    c['translation'] = t
+    return flask.render_template('translate/kanji.html', **c)
+
+@app.route('/search/<pivot>/')
 def search_json(pivot):
     "Returns the search display data as JSON."
     pivot = pivot or flask.request.args.get('pivot')

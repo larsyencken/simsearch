@@ -237,7 +237,7 @@ class Trace(mongoengine.Document):
 
     @classmethod
     def log(cls, request, path):
-        ip = request.META['REMOTE_ADDR']
+        ip = request.remote_addr
         cls(ip_address=ip, path=list(path)).save()
 
 class Translation(mongoengine.Document):
