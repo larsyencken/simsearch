@@ -13,10 +13,10 @@ Performs a connectivity check on the search graph, determining how many kanji
 occur within the top-k neighbour list of at least one other kanji.
 """
 
-import os, sys, optparse
+import sys
+import optparse
 
-from django.conf import settings
-
+from simsearch import settings
 from simsearch.search import models
 
 def check_connectivity(k=settings.N_NEIGHBOURS_RECALLED):

@@ -19,9 +19,9 @@ import optparse
 import codecs
 import random
 
-from django.conf import settings
 from consoleLog import withProgress
 
+from simsearch import settings
 from simsearch.search import stroke, models
 
 def simulate_search(output_file, strategy='greedy',

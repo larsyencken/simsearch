@@ -59,7 +59,7 @@
       };
       var pivot = d(paper.width / 2, paper.height / 2, data['kanji']);
       pivot.node.onclick = function() {
-        window.location.href = '{% url search_target %}?kanji=' + data['kanji'] + '&path=' + data['path'];
+        window.location.href = '/translate/' + data['kanji'] + '/' + '?path=' + data['path'];
       };
       draw_tier(data['tier1'], 1, paper, d, animate);
       draw_tier(data['tier2'], 2, paper, d, animate);
@@ -104,7 +104,7 @@
         }
         e.node.onclick = function(k) {
           return function() {
-            window.location.href = '{% url search_index %}?kanji=' + k +
+            window.location.href = '/?kanji=' + k +
                 '&path=' + data['path'];
           };
         }(kanji);
@@ -123,3 +123,4 @@
     });
   </script>
 {% endblock %}
+

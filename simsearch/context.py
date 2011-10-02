@@ -13,11 +13,9 @@ Context processors for similarity search.
 
 import os
 
-from django.conf import settings
-
 from mercurial import ui, hg, node
 
-def mercurial_revision(request):
+def mercurial_revision():
     project_base = os.path.join(settings.PROJECT_ROOT, '..')
     repo = hg.repository(ui.ui(), project_base)
     fctx = repo.filectx(project_base, 'tip')
@@ -27,7 +25,7 @@ def mercurial_revision(request):
                 'number': fctx.rev(),
             }}
 
-def site_settings(request):
+def site_settings():
     return {'settings': settings}
 
 # vim: ts=4 sw=4 sts=4 et tw=78:

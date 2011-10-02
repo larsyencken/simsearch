@@ -4,8 +4,8 @@ consoleLog>=0.2.4
 simplestats>=0.2.0
 pymongo
 mongoengine>=0.3
-http://bitbucket.org/wkornewald/django-nonrel/get/tip.zip
-http://bitbucket.org/wkornewald/djangotoolbox/get/tip.zip
 pyyaml
 nltk
 mercurial
+flask
+simplejson
