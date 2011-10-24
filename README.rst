@@ -26,7 +26,7 @@ install MongoDB first.
 Next, you need Python (2.6/2.7), pip and virtualenv. Then you can install the
 necessary packages in an environment for simsearch::
 
-    $ pip -E ss-env install $(cat requirements.txt)
+    $ pip -E ss-env install -r requirements.txt 
 
 Occasionally a dependency will fail to install cleanly (e.g. NLTK). In that
 case, you will need to download a package for it, enter the virtual
