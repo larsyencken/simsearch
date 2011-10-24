@@ -19,6 +19,7 @@ import mercurial.hg
 import mercurial.ui
 import mercurial.node
 import simplejson
+import mongoengine
 
 import models
 
@@ -50,17 +51,21 @@ def index():
     kanji_ok = _is_kanji(kanji)
     context = base_context()
 
+    context.update({
+            'kanji': kanji,
+            'kanji_ok': kanji_ok,
+        })
     if not kanji or not kanji_ok:
         # show the search dialog
-        context.update({
-                'kanji': kanji,
-                'kanji_ok': kanji_ok,
-            })
         if kanji:
             context['error'] = 'Please enter a single kanji only as input.'
         return flask.render_template('search/index.html', **context)
 
-    # show the search plane instead
+    try:
+        node = models.Node.objects.get(pivot=kanji)
+    except mongoengine.queryset.DoesNotExist:
+        context['error'] = u'Sorry, %s not found' % kanji
+        return flask.render_template('search/index.html', **context)
 
     # make sure the path is ok
     path = flask.request.args.get('path', '')
@@ -68,7 +73,6 @@ def index():
         path = []
 
     path = list(path) + [kanji]
-    node = models.Node.objects.get(pivot=kanji)
     neighbours = [n.kanji for n in sorted(node.neighbours, reverse=True)]
     neighbours = neighbours[:app.config['N_NEIGHBOURS_RECALLED']]
 
