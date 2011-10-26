@@ -2,7 +2,7 @@ SimSearch
 =========
 
 :Author: Lars Yencken <lars@yencken.org>
-:Date: 12th Feb 2011
+:Date: 26th Oct 2011
 
 Overview
 --------
@@ -21,12 +21,13 @@ Dependencies
 ~~~~~~~~~~~~
 
 SimSearch uses MongoDB as its database backend. If you don't already have it,
-install MongoDB first.
+install MongoDB first. By default, it will create and use a database called
+``simsearch`` in MongoDB.
 
 Next, you need Python (2.6/2.7), pip and virtualenv. Then you can install the
 necessary packages in an environment for simsearch::
 
-    $ pip -E ss-env install -r requirements.txt 
+    $ pip -E ss-env install ./simsearch
 
 Occasionally a dependency will fail to install cleanly (e.g. NLTK). In that
 case, you will need to download a package for it, enter the virtual
@@ -37,33 +38,21 @@ environment and install the package from there::
     $ source /path/to/simsearch/ss-env/bin/activate
     (ss-env) $ python setup.py install
 
+Building and running
+~~~~~~~~~~~~~~~~~~~~
 
-Building
-~~~~~~~~
+Once installed, build the database with::
 
-Once you have all the packages, you are good to build! Source the environment
-variables needed, and get to work.
-
-Firstly, we build the Cython module using Scons::
-
-    $ scons
-
-Secondly, we set the database building::
-
-    $ source environ_vars.sh
-    (ss-env) $ ./simsearch/manage.py build
+    $ python -m simsearch.models
     Building similarity matrix
     Building neighbourhood graph
 
-Now you're done, and can run it locally::
-
-    $ source environ_vars.sh
-    (ss-env) $ ./simsearch/manage.py runserver
-
-The server will now be available at http://127.0.0.1:8000/.
+You can then run the debug server with the command ``simsearch.py``. The
+server will be available at http://localhost:5000/.
 
 Deploying
 ---------
 
-Please see standard Django deployment docs for installing this on a web server, e.g. using Apache and mod_python.
+Please see Flask documentation around deployment. Feel free to email me as
+well, if you have any issues.
 
