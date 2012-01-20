@@ -2,15 +2,19 @@ SimSearch
 =========
 
 :Author: Lars Yencken <lars@yencken.org>
-:Date: 26th Oct 2011
+:Date: 21st Jan 2011
 
 Overview
 --------
 
 SimSearch is a dictionary search-by-similarity interface for Japanese kanji,
-providing a nice front-end for Kanjidic. If you're viewing this source code,
-you should be a developer, or someone at least a little comfortable with
-Python.
+providing a nice front-end for Kanjidic. It lets you find a kanji you don't
+know, using kanji that are visually similar.
+
+.. image http://files.gakusha.info/simsearch/homepage/ss-example-med.png
+
+If you're viewing this source code, you should be a developer, or someone at
+least a little comfortable with Python.
 
 Developing/running
 ------------------
