@@ -1,0 +1,9 @@
+
+build/
+simsearch.egg-info/
+simsearch/stroke.c
+simsearch/stroke.so
+*.pyo
+*.pyc
+.simsearch-installed
+.models-created

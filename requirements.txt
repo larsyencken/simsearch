@@ -9,3 +9,4 @@ nltk
 mercurial
 flask
 simplejson
+cython
