@@ -26,4 +26,4 @@ data:
 	mkdir -p data
 
 clean:
-	rm -rf env build .simsearch-installed .models-created
+	rm -rf env build .simsearch-installed .models-created simsearch.egg-info
