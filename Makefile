@@ -21,9 +21,5 @@ env/bin/cython: env
 simsearch/stroke.c: simsearch/stroke.pyx env/bin/cython
 	env/bin/cython $<
 
-data:
-	# XXX actually we need data files for strokes and kanji frequency
-	mkdir -p data
-
 clean:
 	rm -rf env build .simsearch-installed .models-created simsearch.egg-info

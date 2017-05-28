@@ -60,14 +60,15 @@ import mongoengine
 mongoengine.connect(MONGODB_NAME, username=MONGODB_USERNAME,
         password=MONGODB_PASSWORD, host=MONGODB_HOST, port=MONGODB_PORT)
 
+# static data files needed for building
 DATA_DIR = os.path.join(PROJECT_ROOT, 'data')
 
 # default stroke source
 if STROKE_SOURCE is None:
-    STROKE_SOURCE = os.path.join(DATA_DIR, 'structure', 'strokes_ulrich')
+    STROKE_SOURCE = os.path.join(DATA_DIR, 'strokes_ulrich')
 
 # default frequency source
 if FREQ_SOURCE is None:
-    FREQ_SOURCE = os.path.join(DATA_DIR, 'corpus', 'jp_char_corpus_counts.gz')
+    FREQ_SOURCE = os.path.join(DATA_DIR, 'jp_char_corpus_counts.gz')
 
 # vim: ts=4 sw=4 sts=4 et tw=78:
